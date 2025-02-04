@@ -18,10 +18,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/products', [App\Http\Controllers\ProductController::class, 'getAll']);
-Route::get('/products/{id}', [App\Http\Controllers\ProductController::class, 'getById']);
-Route::post('/products', [App\Http\Controllers\ProductController::class, 'create']);
-Route::delete('/products/{id}', [App\Http\Controllers\ProductController::class, 'destroy']);
-Route::put('/products/{id}', [App\Http\Controllers\ProductController::class, 'update']);
+Route::prefix('products')->group(function () {
+    Route::get('/', [App\Http\Controllers\ProductController::class, 'getAll']);
+    Route::get('/{id}', [App\Http\Controllers\ProductController::class, 'getById']);
+    Route::post('/', [App\Http\Controllers\ProductController::class, 'create']);
+    Route::delete('/{id}', [App\Http\Controllers\ProductController::class, 'destroy']);
+    Route::put('/{id}', [App\Http\Controllers\ProductController::class, 'update']);
+});
 
-
+Route::prefix('categories')->group(function () {
+    Route::get('/', [App\Http\Controllers\CategoryController::class, 'getAll']);
+    Route::get('/{id}', [App\Http\Controllers\CategoryController::class, 'getById']);
+    Route::post('/', [App\Http\Controllers\CategoryController::class, 'create']);
+    Route::delete('/{id}', [App\Http\Controllers\CategoryController::class, 'destroy']);
+    Route::put('/{id}', [App\Http\Controllers\CategoryController::class, 'update']);
+});

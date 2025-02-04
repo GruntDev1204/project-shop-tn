@@ -7,7 +7,6 @@ use App\Service\extend\IServiceProduct;
 
 class ProductService implements IServiceProduct
 {
-
     private $productRepo;
     public function __construct(ExtendIProductRepo $productRepo)
     {

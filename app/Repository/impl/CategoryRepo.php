@@ -1,6 +1,7 @@
 <?php
-
+namespace App\Repository\impl;
 use App\Models\Category;
+use App\Repository\extend\ICategoryRepo;
 
 class CategoryRepo implements ICategoryRepo
 {

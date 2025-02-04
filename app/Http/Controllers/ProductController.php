@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Http\Requests\ProductReq;
 use App\Service\extend\IServiceProduct as ExtendIServiceProduct;
 use Illuminate\Http\Request;
 
@@ -22,48 +22,23 @@ class ProductController extends Controller
         $data = $this->productSV->getAll();
 
         if (!empty($data)) {
-            return response()->json(
-                [
-                    'status' => 200,
-                    'data' => $data
-                ],
-                200
-            );
+            return $this->returnJson($data, 200, "success!");
         } else {
-            return response()->json(
-                [
-                    'status' => 404,
-                    'data' => "no data available"
-                ],
-                404
-            );
+            return $this->returnJson("nodata", 404, "No data available");
         }
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create(ProductReq $request)
     {
         $data = $request->all();
         $result = $this->productSV->create($data);
-
         if ($result) {
-            return response()->json(
-                [
-                    'status' => 201,
-                    'data' => $result
-                ],
-                201
-            );
+            return $this->returnJson($result, 200, "created successfully!");
         } else {
-            return response()->json(
-                [
-                    'status' => 400,
-                    'data' => "fail to create resource"
-                ],
-                400
-            );
+            return $this->returnJson($result, 400, "you have bad request!");
         }
     }
 
@@ -75,45 +50,21 @@ class ProductController extends Controller
         $data = $this->productSV->findById($id);
 
         if (!empty($data)) {
-            return response()->json(
-                [
-                    'status' => 200,
-                    'data' => $data
-                ],
-                200
-            );
+            return $this->returnJson($data, 200, "success!");
         } else {
-            return response()->json(
-                [
-                    'status' => 404,
-                    'data' => "no data available"
-                ],
-                404
-            );
+            return $this->returnJson($data, 404, "data not found!");
         }
     }
 
-    public function update($id, Request $request)
+    public function update($id, ProductReq $request)
     {
         $data = $request->all();
         $result = $this->productSV->update($id, $data);
 
         if ($result) {
-            return response()->json(
-                [
-                    'status' => 200,
-                    'data' => $result
-                ],
-                200
-            );
+            return $this->returnJson($result, 200, "success!");
         } else {
-            return response()->json(
-                [
-                    'status' => 400,
-                    'data' => "fail to update resource"
-                ],
-                400
-            );
+            return $this->returnJson($result, 400, "failure!");
         }
     }
 
@@ -123,23 +74,10 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $result = $this->productSV->delete($id);
-
         if ($result) {
-            return response()->json(
-                [
-                    'status' => 204,
-                    'data' => $result
-                ],
-                204
-            );
+            return $this->returnJson($result, 200, "success!");
         } else {
-            return response()->json(
-                [
-                    'status' => 404,
-                    'data' => "no data available"
-                ],
-                404
-            );
+            return $this->returnJson($result, 400, "failure!");
         }
     }
 }
