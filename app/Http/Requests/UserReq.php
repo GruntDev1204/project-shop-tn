@@ -23,10 +23,11 @@ class UserReq extends FormRequest
      */
     public function rules(): array
     {
+        $userId = auth()->user()->id;
         return [
-            'name'   => 'required|max:100',
-            'password'   => 'required|min:10',
-            'email'   => 'required|unique:users',
+            'name' => 'required|max:100',
+            'password' => 'required|min:10',
+            'email' => 'required|unique:users,email,' . $userId,
         ];
     }
 

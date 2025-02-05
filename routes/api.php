@@ -38,10 +38,16 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
 ], function ($router) {
-    Route::post('login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login');
+    Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
     Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
     Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
 });
 
-Route::post('users/register/', [App\Http\Controllers\UserController::class, 'signup']);
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'users'
+], function () {
+    Route::post('register', [App\Http\Controllers\UserController::class, 'signup']);
+    Route::put('edit', [App\Http\Controllers\UserController::class, 'updateProfile']);
+});
