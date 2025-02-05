@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CategoryReq;
+use App\Models\User;
 use App\Service\extend\IServiceCategory;
 use Illuminate\Http\Request;
 
@@ -68,6 +69,7 @@ class CategoryController extends Controller
             return $this->returnJson($rs, 404, "No data available");
         }
     }
+
 
     /**
      * Remove the specified resource from storage.

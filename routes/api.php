@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::prefix('products')->group(function () {
     Route::get('/', [App\Http\Controllers\ProductController::class, 'getAll']);
@@ -33,3 +33,15 @@ Route::prefix('categories')->group(function () {
     Route::delete('/{id}', [App\Http\Controllers\CategoryController::class, 'destroy']);
     Route::put('/{id}', [App\Http\Controllers\CategoryController::class, 'update']);
 });
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login');
+    Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+    Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
+    Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
+});
+
+Route::post('users/register/', [App\Http\Controllers\UserController::class, 'signup']);
