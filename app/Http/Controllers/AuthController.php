@@ -6,13 +6,14 @@ use App\Exceptions\AuthException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthReq;
 use App\Models\User;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
     public function login(AuthReq $authReq)
     {
         $credentials = $authReq->only('email', 'password');
-        if (!$token = auth()->attempt($credentials)) {
+        if (! $token = auth()->attempt($credentials)) {
             throw new AuthException("login failed");
         }
         return $this->respondWithToken($token);
@@ -37,7 +38,12 @@ class AuthController extends Controller
     public function checkAuth()
     {
         if ($this->getAuth()) {
-            return $this->returnJson(true, 200, "your authentication is OK!");
+            $expirationTime = Carbon::parse(auth()->getPayload()->get('exp'));
+
+            $info = [
+                "expires_at" => $expirationTime->toDateTimeString()
+            ];
+            return $this->returnJson($info, 200, "your authentication is OK!");
         }
     }
 
@@ -64,7 +70,7 @@ class AuthController extends Controller
         $data = [
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 600
+            'expires_at' => Carbon::now()->addHours(24)->toDateTimeString()
         ];
         return $this->returnJson($data, 200, null);
     }
