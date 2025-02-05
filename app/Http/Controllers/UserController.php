@@ -2,44 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\AuthException;
+use App\Http\Requests\UpdateUser;
 use App\Http\Requests\UserReq;
 use App\Models\User;
+use App\Service\extend\IServiceUser;
 
 class UserController extends Controller
 {
+    protected $userSV;
+
+    public function __construct(IServiceUser $userSV)
+    {
+        $this->userSV = $userSV;
+    }
     public function signup(UserReq $request)
     {
-        $dfAvatar = "https://firebasestorage.googleapis.com/v0/b/hotrung1204-36f50.appspot.com/o/Ngoc_Red%2Fdf.jpg?alt=media&token=813909dc-52e3-43d2-b2cd-51c1b912c44e";
         $data = $request->all();
-        $avatar = isset($data['avatar']) && $data['avatar'] !== "" ? $data['avatar'] : $dfAvatar;
-
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'avatar' => $avatar,
-            'password' => bcrypt($data['password']),
-        ]);
+        $user = $this->userSV->create($data);
 
         return $this->returnJson($user, 200, "resigter success!");
     }
 
-    public function updateProfile(UserReq $request)
+    public function updateProfile(UpdateUser $request)
     {
-        $user = auth()->user();
-        if (!$user) {
-            return $this->returnJson(null, 401, "Unauthorized đitmemày");
-        }
-
-        $dfAvatar = "https://firebasestorage.googleapis.com/v0/b/hotrung1204-36f50.appspot.com/o/Ngoc_Red%2Fdf.jpg?alt=media&token=813909dc-52e3-43d2-b2cd-51c1b912c44e";
+        $user = $this->getAuth();
         $data = $request->all();
-        $avatar = isset($data['avatar']) && $data['avatar'] !== "" ? $data['avatar'] : $dfAvatar;
-
-        $dataUpdate = User::find($user->id);
-        $dataUpdate->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'avatar' => $avatar,
-        ]);
+        $dataUpdate = $this->userSV->update($user->id, $data);
 
         return $this->returnJson($dataUpdate, 200, "update successful!");
     }

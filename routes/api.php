@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,40 +12,38 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware(['api'])->group(function () {
+    Route::prefix('products')->group(function () {
+        Route::get('/', [App\Http\Controllers\ProductController::class, 'getAll']);
+        Route::get('/{id}', [App\Http\Controllers\ProductController::class, 'getById']);
+        Route::post('/', [App\Http\Controllers\ProductController::class, 'create']);
+        Route::delete('/{id}', [App\Http\Controllers\ProductController::class, 'destroy']);
+        Route::put('/{id}', [App\Http\Controllers\ProductController::class, 'update']);
+    });
 
-Route::prefix('products')->group(function () {
-    Route::get('/', [App\Http\Controllers\ProductController::class, 'getAll']);
-    Route::get('/{id}', [App\Http\Controllers\ProductController::class, 'getById']);
-    Route::post('/', [App\Http\Controllers\ProductController::class, 'create']);
-    Route::delete('/{id}', [App\Http\Controllers\ProductController::class, 'destroy']);
-    Route::put('/{id}', [App\Http\Controllers\ProductController::class, 'update']);
-});
+    Route::prefix('categories')->group(function () {
+        Route::get('/', [App\Http\Controllers\CategoryController::class, 'getAll']);
+        Route::get('/{id}', [App\Http\Controllers\CategoryController::class, 'getById']);
+        Route::post('/', [App\Http\Controllers\CategoryController::class, 'create']);
+        Route::delete('/{id}', [App\Http\Controllers\CategoryController::class, 'destroy']);
+        Route::put('/{id}', [App\Http\Controllers\CategoryController::class, 'update']);
+    });
 
-Route::prefix('categories')->group(function () {
-    Route::get('/', [App\Http\Controllers\CategoryController::class, 'getAll']);
-    Route::get('/{id}', [App\Http\Controllers\CategoryController::class, 'getById']);
-    Route::post('/', [App\Http\Controllers\CategoryController::class, 'create']);
-    Route::delete('/{id}', [App\Http\Controllers\CategoryController::class, 'destroy']);
-    Route::put('/{id}', [App\Http\Controllers\CategoryController::class, 'update']);
-});
+    Route::group([
+        'prefix' => 'auth'
+    ], function () {
+        Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
+        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+        // Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
+        Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
+        Route::post('reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword']);
+        Route::get('check-auth', [\App\Http\Controllers\AuthController::class, 'checkAuth']);
+    });
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
-], function ($router) {
-    Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
-    Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
-    Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
-    Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
-});
-
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'users'
-], function () {
-    Route::post('register', [App\Http\Controllers\UserController::class, 'signup']);
-    Route::put('edit', [App\Http\Controllers\UserController::class, 'updateProfile']);
+    Route::group([
+        'prefix' => 'users'
+    ], function () {
+        Route::post('/', [App\Http\Controllers\UserController::class, 'signup']);
+        Route::put('/', [App\Http\Controllers\UserController::class, 'updateProfile']);
+    });
 });

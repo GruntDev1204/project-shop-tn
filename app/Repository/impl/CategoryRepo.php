@@ -1,5 +1,8 @@
 <?php
+
 namespace App\Repository\impl;
+
+use App\Exceptions\APIException;
 use App\Models\Category;
 use App\Repository\extend\ICategoryRepo;
 
@@ -12,6 +15,10 @@ class CategoryRepo implements ICategoryRepo
 
     public function findById($id)
     {
+        $data = Category::find($id);
+        if (!$data) {
+            throw new APIException(404, "data not found!");
+        }
         return Category::find($id);
     }
 
@@ -23,7 +30,7 @@ class CategoryRepo implements ICategoryRepo
 
     public function update($id, $data)
     {
-        $category = Category::find($id);
+        $category = $this->findById($id);
         $category->update($data);
         return $category;
     }
@@ -31,8 +38,6 @@ class CategoryRepo implements ICategoryRepo
     public function delete($id)
     {
         $category = $this->findById($id);
-        if($category === null) return false;
-
         $category->delete();
         return true;
     }

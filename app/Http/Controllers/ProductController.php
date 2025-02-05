@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\APIException;
 use App\Http\Requests\ProductReq;
 use App\Service\extend\IServiceProduct as ExtendIServiceProduct;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -24,7 +24,7 @@ class ProductController extends Controller
         if (!empty($data)) {
             return $this->returnJson($data, 200, "success!");
         } else {
-            return $this->returnJson("nodata", 404, "No data available");
+            throw new APIException(500, "failure!");
         }
     }
 
@@ -34,11 +34,12 @@ class ProductController extends Controller
     public function create(ProductReq $request)
     {
         $data = $request->all();
+
         $result = $this->productSV->create($data);
         if ($result) {
             return $this->returnJson($result, 200, "created successfully!");
         } else {
-            return $this->returnJson($result, 400, "you have bad request!");
+            throw new APIException(500, "failure!");
         }
     }
 
@@ -52,7 +53,7 @@ class ProductController extends Controller
         if (!empty($data)) {
             return $this->returnJson($data, 200, "success!");
         } else {
-            return $this->returnJson($data, 404, "data not found!");
+            throw new APIException(500, "failure!");
         }
     }
 
@@ -64,7 +65,7 @@ class ProductController extends Controller
         if ($result) {
             return $this->returnJson($result, 200, "success!");
         } else {
-            return $this->returnJson($result, 400, "failure!");
+            throw new APIException(500, "failure!");
         }
     }
 
@@ -77,7 +78,7 @@ class ProductController extends Controller
         if ($result) {
             return $this->returnJson($result, 200, "success!");
         } else {
-            return $this->returnJson($result, 400, "failure!");
+            throw new APIException(500, "failure!");
         }
     }
 }

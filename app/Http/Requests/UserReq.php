@@ -23,11 +23,10 @@ class UserReq extends FormRequest
      */
     public function rules(): array
     {
-        $userId = auth()->user()->id;
         return [
             'name' => 'required|max:100',
             'password' => 'required|min:10',
-            'email' => 'required|unique:users,email,' . $userId,
+            'email' => 'required|unique:users,email,'
         ];
     }
 
@@ -50,16 +49,5 @@ class UserReq extends FormRequest
             'password'      => 'mật khẩu',
             'email'      => 'Email',
         ];
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'status' => 422,
-                'message' => 'Data request not valid!',
-                'errors' => $validator->errors(),
-            ], 422)
-        );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\APIException;
 use App\Http\Requests\CategoryReq;
 use App\Models\User;
 use App\Service\extend\IServiceCategory;
@@ -25,7 +26,7 @@ class CategoryController extends Controller
         if ($rs) {
             return $this->returnJson($rs, 200, "success!");
         } else {
-            return $this->returnJson("nodata", 404, "No data available");
+            throw new APIException(500, "failure!");
         }
     }
 
@@ -38,7 +39,7 @@ class CategoryController extends Controller
         if ($rs) {
             return $this->returnJson($rs, 200, "success!");
         } else {
-            return $this->returnJson("nodata", 404, "No data available");
+            throw new APIException(500, "failure!");
         }
     }
 
@@ -52,7 +53,7 @@ class CategoryController extends Controller
         if ($rs) {
             return $this->returnJson($rs, 201, "created!");
         } else {
-            return $this->returnJson($rs, 400, "bad request!");
+            throw new APIException(500, "failure!");
         }
     }
 
@@ -66,7 +67,7 @@ class CategoryController extends Controller
         if ($rs) {
             return $this->returnJson($rs, 200, "success!");
         } else {
-            return $this->returnJson($rs, 404, "No data available");
+            throw new APIException(500, "failure!");
         }
     }
 
@@ -80,7 +81,7 @@ class CategoryController extends Controller
         if ($rs) {
             return $this->returnJson($rs, 200, "success!");
         } else {
-            return $this->returnJson($rs, 404, "No data available");
+            throw new APIException(500, "failure!");
         }
     }
 }

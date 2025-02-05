@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Repository\impl;
 
+use App\Exceptions\APIException;
 use App\Models\Product;
 use App\Repository\extend\IProductRepo;
 
@@ -13,6 +15,10 @@ class ProductRepo implements IProductRepo
 
     public function findById($id)
     {
+        $data = Product::find($id);
+        if (!$data) {
+            throw new APIException(404, "data not found!");
+        }
         return Product::find($id);
     }
 
@@ -24,10 +30,6 @@ class ProductRepo implements IProductRepo
     public function update($id, $data)
     {
         $product = $this->findById($id);
-        if ($product == null) {
-            return false;
-        }
-
         $product->update($data);
         return $product;
     }
@@ -35,9 +37,6 @@ class ProductRepo implements IProductRepo
     public function delete($id)
     {
         $product = $this->findById($id);
-        if ($product == null) {
-            return false;
-        }
         $product->delete();
         return true;
     }
@@ -49,5 +48,4 @@ class ProductRepo implements IProductRepo
         $product->status = !$product->status;
         $product->save();
     }
-
 }

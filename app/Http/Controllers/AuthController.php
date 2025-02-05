@@ -2,38 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\AuthException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AuthReq;
+use App\Models\User;
 
 class AuthController extends Controller
 {
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function login()
+    public function login(AuthReq $authReq)
     {
-        $credentials = request(['email', 'password']);
-
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $credentials = $authReq->only('email', 'password');
+        if (!$token = auth()->attempt($credentials)) {
+            throw new AuthException("login failed");
         }
-
         return $this->respondWithToken($token);
     }
 
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    public function resetPassword(AuthReq $authReq)
+    {
+        $user = $this->getAuth();
+        $ps = User::find($user->id);
+        $ps->password =  bcrypt($authReq->password);
+        $ps->save();
+
+        $this->logout();
+        return $this->returnJson($user, 200, "your password has been reset!");
+    }
+
     public function profile()
     {
-        $user = auth()->user();
-        if (!$user) {
-            return $this->returnJson(null, 401, "Unauthorized");
+        return $this->returnJson($this->getAuth(), 200, null);
+    }
+
+    public function checkAuth()
+    {
+        if ($this->getAuth()) {
+            return $this->returnJson(true, 200, "your authentication is OK!");
         }
-        return $this->returnJson(auth()->user(), 200, null);
     }
 
     /**
@@ -43,36 +48,24 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
-        return response()->json(['message' => 'Successfully logged out'], 204);
+        if ($this->getAuth()) {
+            auth()->logout();
+            return response()->json([], 204);
+        }
     }
 
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
-    }
+    // public function refresh()
+    // {
+    //     return $this->respondWithToken(auth()->refresh());
+    // }
 
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     protected function respondWithToken($token)
     {
-        return response()->json([
-            'data' => [
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 600
-            ],
-            'status' => 200
-        ], 200);
+        $data = [
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 600
+        ];
+        return $this->returnJson($data, 200, null);
     }
 }

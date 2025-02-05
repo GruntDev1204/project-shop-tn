@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
 
-class ProductReq extends FormRequest
+class UpdateUser extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +22,8 @@ class ProductReq extends FormRequest
     public function rules(): array
     {
         return [
-            'name'   => 'required|max:100',
-            'price'   => 'required|numeric|min:1000',
-            'category_id'   => 'required|exists:categories,id',
+            'name' => 'required|max:100',
+            'password' => 'required|min:10',
         ];
     }
 
@@ -37,15 +34,15 @@ class ProductReq extends FormRequest
             'exists'        => ':attribute không tồn tại',
             'numeric'       => ':attribute phải là số',
             'max'           => ':attribute tối đa',
+            'min'           => ':attribute tối thiểu',
         ];
     }
 
     public function attributes()
     {
         return [
-            'name'   => 'Tên Sản phẩm',
-            'price'      => 'Gía bán',
-            'category_id'      => 'Danh mục',
+            'name'   => 'tên người dùng',
+            'password'      => 'mật khẩu',
         ];
     }
 }
