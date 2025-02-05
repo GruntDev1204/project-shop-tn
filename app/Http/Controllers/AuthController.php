@@ -47,11 +47,6 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function logout()
     {
         if ($this->getAuth()) {
@@ -60,10 +55,10 @@ class AuthController extends Controller
         }
     }
 
-    // public function refresh()
-    // {
-    //     return $this->respondWithToken(auth()->refresh());
-    // }
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
 
     protected function respondWithToken($token)
     {
