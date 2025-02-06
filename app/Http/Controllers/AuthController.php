@@ -67,6 +67,14 @@ class AuthController extends Controller
     }
 
     public function refresh()
+<<<<<<< HEAD
+=======
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
+    protected function respondWithToken($token)
+>>>>>>> 884e3105ee89c3d14b93eedfcf5e3859a76c536f
     {
         return $this->respondWithToken(auth()->refresh());
     }
