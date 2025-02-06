@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\APIException;
 use App\Http\Requests\CategoryReq;
-use App\Models\User;
 use App\Service\extend\IServiceCategory;
-use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -48,6 +46,7 @@ class CategoryController extends Controller
      */
     public function create(CategoryReq $request)
     {
+        $this->authorizeRole('Admin');
         $data = $request->all();
         $rs = $this->categorySV->create($data);
         if ($rs) {
@@ -62,6 +61,7 @@ class CategoryController extends Controller
      */
     public function update($id, CategoryReq $request)
     {
+        $this->authorizeRole('Admin');
         $data = $request->all();
         $rs = $this->categorySV->update($id, $data);
         if ($rs) {
@@ -77,6 +77,7 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorizeRole('Admin');
         $rs = $this->categorySV->delete($id);
         if ($rs) {
             return $this->returnJson($rs, 200, "success!");

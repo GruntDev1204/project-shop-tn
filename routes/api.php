@@ -34,7 +34,7 @@ Route::middleware(['api'])->group(function () {
     ], function () {
         Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
         Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
-        // Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
+        Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
         Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
         Route::post('reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword']);
         Route::get('check-auth', [\App\Http\Controllers\AuthController::class, 'checkAuth']);

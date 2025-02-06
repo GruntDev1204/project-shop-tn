@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\APIException;
+use App\Exceptions\AuthException;
 use App\Http\Requests\ProductReq;
 use App\Service\extend\IServiceProduct as ExtendIServiceProduct;
 
@@ -33,6 +34,7 @@ class ProductController extends Controller
      */
     public function create(ProductReq $request)
     {
+        $this->authorizeRole('Admin');
         $data = $request->all();
 
         $result = $this->productSV->create($data);
@@ -59,6 +61,7 @@ class ProductController extends Controller
 
     public function update($id, ProductReq $request)
     {
+        $this->authorizeRole('Admin');
         $data = $request->all();
         $result = $this->productSV->update($id, $data);
 
@@ -74,6 +77,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorizeRole('Admin');
         $result = $this->productSV->delete($id);
         if ($result) {
             return $this->returnJson($result, 200, "success!");

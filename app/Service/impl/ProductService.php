@@ -30,6 +30,8 @@ class ProductService implements IServiceProduct
 
     public function create($data)
     {
+        $data['status'] = $data['status'] ?? 1;
+        $data['image'] = $data['image'] ?? "./public/images/electronics.jpg";
         return $this->productRepo->create($data);
     }
 

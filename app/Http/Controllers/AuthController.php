@@ -10,6 +10,16 @@ use Carbon\Carbon;
 
 class AuthController extends Controller
 {
+    protected function respondWithToken($token)
+    {
+        $data = [
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_at' => Carbon::now()->addHours(24)->toDateTimeString()
+        ];
+        return $this->returnJson($data, 200, null);
+    }
+
     public function login(AuthReq $authReq)
     {
         $credentials = $authReq->only('email', 'password');
@@ -41,17 +51,13 @@ class AuthController extends Controller
             $expirationTime = Carbon::parse(auth()->getPayload()->get('exp'));
 
             $info = [
-                "expires_at" => $expirationTime->toDateTimeString()
+                "expires_at" => $expirationTime->toDateTimeString(),
+                "role" => $this->getAuth()->role
             ];
             return $this->returnJson($info, 200, "your authentication is OK!");
         }
     }
 
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function logout()
     {
         if ($this->getAuth()) {
@@ -60,18 +66,8 @@ class AuthController extends Controller
         }
     }
 
-    // public function refresh()
-    // {
-    //     return $this->respondWithToken(auth()->refresh());
-    // }
-
-    protected function respondWithToken($token)
+    public function refresh()
     {
-        $data = [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_at' => Carbon::now()->addHours(24)->toDateTimeString()
-        ];
-        return $this->returnJson($data, 200, null);
+        return $this->respondWithToken(auth()->refresh());
     }
 }

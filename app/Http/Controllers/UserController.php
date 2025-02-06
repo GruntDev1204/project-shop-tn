@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\AuthException;
 use App\Http\Requests\UpdateUser;
 use App\Http\Requests\UserReq;
-use App\Models\User;
 use App\Service\extend\IServiceUser;
 
 class UserController extends Controller

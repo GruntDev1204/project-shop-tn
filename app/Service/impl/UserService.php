@@ -27,6 +27,7 @@ class UserService implements IServiceUser
         $avatar = isset($data['avatar']) && $data['avatar'] !== "" ? $data['avatar'] : $dfAvatar;
         $data['avatar'] = $avatar;
 
+       
         return $this->userRepo->create($data);
     }
 
