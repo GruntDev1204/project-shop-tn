@@ -13,7 +13,7 @@ class ProductSeed extends Seeder
      */
     public function run(): void
     {
-        DB::table('categories')->truncate();
+        // DB::table('categories')->truncate();
         DB::table('products')->insert([
             ['name' => 'tivi', 'image' => './public/images/electronics.jpg', 'price' => 12000, 'status' => true,  'created_at' => now(), 'updated_at' => now(), 'category_id' => 1],
             ['name' => 'iphone', 'image' => './public/images/electronics.jpg', 'price' => 1009077, 'status' => true,  'created_at' => now(), 'updated_at' => now(), 'category_id' => 3],

@@ -2,7 +2,7 @@
 
 namespace  App\Service\impl;
 
-use App\Repository\extend\IProductRepo as ExtendIProductRepo;
+use App\Exceptions\APIException;
 use App\Repository\extend\IUserRepo;
 use App\Service\extend\IServiceUser;
 
@@ -14,7 +14,27 @@ class UserService implements IServiceUser
         $this->userRepo = $userRepo;
     }
 
-    public function getAll() {}
+    public function changeRole($hash, $role)
+    {
+        $roleId =  3;
+        switch ($role) {
+            case 'Admin':
+                $roleId = 2;
+                break;
+            case 'Customer':
+                $roleId = 3;
+                break;
+            default:
+                throw new APIException(400, "Role not valid!");
+                break;
+        }
+        return $this->userRepo->changeRole($hash, $roleId);
+    }
+
+    public function getAll()
+    {
+        return $this->userRepo->getAll();
+    }
 
     public function findById($id)
     {
@@ -27,7 +47,7 @@ class UserService implements IServiceUser
         $avatar = isset($data['avatar']) && $data['avatar'] !== "" ? $data['avatar'] : $dfAvatar;
         $data['avatar'] = $avatar;
 
-       
+
         return $this->userRepo->create($data);
     }
 
@@ -40,5 +60,15 @@ class UserService implements IServiceUser
         return $this->userRepo->update($id, $data);
     }
 
-    public function delete($id) {}
+    public function delete($id)
+    {
+        return $this->userRepo->delete($id);
+    }
+
+    public function activeUser($hash)
+    {
+
+
+        return $this->userRepo->activeUser($hash);
+    }
 }

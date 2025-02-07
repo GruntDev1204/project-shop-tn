@@ -45,5 +45,8 @@ Route::middleware(['api'])->group(function () {
     ], function () {
         Route::post('/', [App\Http\Controllers\UserController::class, 'signup']);
         Route::put('/', [App\Http\Controllers\UserController::class, 'updateProfile']);
+        Route::get('/active/send-mail', [App\Http\Controllers\UserController::class, 'sendMail']);
+        Route::get('/active/{hash}', [App\Http\Controllers\UserController::class, 'activeUsers']);
+        Route::get('/change-role/{hash}', [App\Http\Controllers\UserController::class, 'changeRole']);
     });
 });

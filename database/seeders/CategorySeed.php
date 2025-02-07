@@ -13,7 +13,9 @@ class CategorySeed extends Seeder
      */
     public function run(): void
     {
-        DB::table('categories')->truncate();
+        // DB::table('categories')->delete();
+        // DB::table('categories')->truncate();
+
         DB::table('categories')->insert([
             ['name' => 'Electronics', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Fashion', 'created_at' => now(), 'updated_at' => now()],

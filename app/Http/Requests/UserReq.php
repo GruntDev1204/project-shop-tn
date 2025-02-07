@@ -27,7 +27,6 @@ class UserReq extends FormRequest
             'name' => 'required|max:100',
             'password' => 'required|min:10',
             'email' => 'required|unique:users,email,',
-            'role' => 'required|exists:roles,name',
         ];
     }
 
@@ -49,7 +48,6 @@ class UserReq extends FormRequest
             'name'   => 'tên người dùng',
             'password'      => 'mật khẩu',
             'email'      => 'Email',
-            'role' => 'Role',
         ];
     }
 }

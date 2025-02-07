@@ -3,10 +3,16 @@
 namespace App\Repository\impl;
 
 use App\Exceptions\APIException;
-use App\Models\Product;
+use App\Exceptions\AuthException;
+use App\Exceptions\AuthorizeException;
+use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
 use App\Repository\extend\IUserRepo;
+use Carbon\Carbon;
+use Illuminate\Auth\Middleware\Authorize;
+use Illuminate\Support\Str;
+
 
 class UserRepo implements IUserRepo
 {
@@ -14,38 +20,49 @@ class UserRepo implements IUserRepo
     {
         $user = User::where('email', $data['email'])->first();
         if (!$user) {
-            throw new APIException(404, "data not found!");
+            throw new APIException(404, "user by this email not found!");
         }
+
         $roleUser = RoleUser::where('user_id', $user->id)->first();
-        switch ($data['role']) {
-            case 'admin':
-                if (!$roleUser) {
-                    $roleUser = RoleUser::create([
-                        'user_id' => $user->id,
-                        'role_id' => 1,
-                    ]);
-                }
-                break;
-            case 'customer':
-                if (!$roleUser) {
-                    $roleUser = RoleUser::create([
-                        'user_id' => $user->id,
-                        'role_id' => 2,
-                    ]);
-                }
-                break;
-            default:
-                throw new APIException(404, "role not found!");
+        if (!$roleUser) {
+            RoleUser::create([
+                'user_id' => $user->id,
+                'role_id' => 3,
+            ]);
         }
     }
 
-    public function getAll() {}
+    private function findByHash($hash)
+    {
+        $user = User::where('hash_code', $hash)->first();
+        if (!$user) {
+            throw new APIException(404, "user by this hash not found!");
+        }
+
+        return $user;
+    }
+
+    public function changeRole($hash, $roleId)
+    {
+        $user = $this->findByHash($hash);
+        RoleUser::where('user_id', $user->id)->update(['role_id' => $roleId]);
+
+        if ($roleId === 2) {
+            $this->activeUser($hash);
+        }
+        return Role::find($roleId);
+    }
+
+    public function getAll()
+    {
+        return User::all();
+    }
 
     public function findById($id)
     {
         $data = User::find($id);
         if (!$data) {
-            throw new APIException(404, "data not found!");
+            throw new APIException(404, "user not found!");
         }
         return User::find($id);
     }
@@ -53,15 +70,17 @@ class UserRepo implements IUserRepo
     public function create($data)
     {
         $user = User::create([
+            'hash_code' => Str::uuid(),
             'name' => $data['name'],
             'email' => $data['email'],
             'avatar' => $data['avatar'],
             'password' => bcrypt($data['password']),
+            'status' => 0
         ]);
         $this->getRole($data);
 
         $userData = [
-            'role' => $data['role'],
+            'role' => 'customers',
             'user' => $user
         ];
 
@@ -79,5 +98,26 @@ class UserRepo implements IUserRepo
         return $dataUpdate;
     }
 
-    public function delete($id) {}
+    public function delete($id)
+    {
+        $user = $this->findById($id);
+        $user->delete();
+        return true;
+    }
+
+    public function activeUser($hash)
+    {
+        $user = $this->findByHash($hash);
+
+        if (!in_array($user->status, [0])) {
+            throw new AuthorizeException("bạn bị cho cook khỏi server!");
+        }
+
+        if (!$user) {
+            throw new APIException(404, "user by this hash not found!");
+        }
+        $user->status = 1;
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+    }
 }
