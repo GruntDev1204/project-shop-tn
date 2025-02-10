@@ -63,4 +63,24 @@ class Controller extends BaseController
             throw new AuthorizeException("bạn bị cho cook khỏi server!");
         }
     }
+
+    protected function checkRoleName($roleName, $email)
+    {
+        $user = User::where('email', $email)->first();
+        $roleUser = RoleUser::where('user_id', $user->id)->first();
+        if (!$roleUser) {
+            throw new AuthException('User does not have a valid role.');
+        }
+
+        $role = Role::find($roleUser->role_id);
+        if (!$role) {
+            throw new APIException(404, 'Role not found.');
+        }
+
+        if ($roleName === 'Admin' && $role->name === 'Customer') {
+            throw new AuthorizeException("You do not have permission to perform this action!");
+        }
+
+        return $role->name;
+    }
 }

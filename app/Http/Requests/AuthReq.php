@@ -24,6 +24,7 @@ class AuthReq extends FormRequest
         return [
             'email'   => 'required|exists:users,email',
             'password'   => 'required',
+            'role' => 'required|exists:roles,name',
         ];
     }
 
@@ -31,7 +32,7 @@ class AuthReq extends FormRequest
     {
         return [
             'required'      => ':attribute không được để trống',
-            'exists' => ':attribute khẢng tồn tại',
+            'exists' => ':attribute không tồn tại',
         ];
     }
 
@@ -40,6 +41,7 @@ class AuthReq extends FormRequest
         return [
             'email'   => 'email',
             'password' => 'password',
+            'role' => 'role',
         ];
     }
 }

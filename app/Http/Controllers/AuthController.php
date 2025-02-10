@@ -3,32 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\AuthException;
+use App\Exceptions\AuthorizeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthReq;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Auth\Middleware\Authorize;
 
 class AuthController extends Controller
 {
-    protected function respondWithToken($token)
+    protected function respondWithToken($role, $token)
     {
         $data = [
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_at' => Carbon::now()->addHours(24)->toDateTimeString()
+            'expires_at' => Carbon::now()->addHours(24)->toDateTimeString(),
+            'role' => $role
         ];
         return $this->returnJson($data, 200, null);
     }
 
     public function login(AuthReq $authReq)
     {
+        $role = $authReq->query('role');
         $credentials = $authReq->only('email', 'password');
         $this->checkIsBlocked($authReq->email);
 
         if (! $token = auth()->attempt($credentials)) {
             throw new AuthException("login failed");
         }
-        return $this->respondWithToken($token);
+
+        return $this->respondWithToken($this->checkRoleName($role, $authReq->email), $token);
     }
 
     public function resetPassword(AuthReq $authReq)
