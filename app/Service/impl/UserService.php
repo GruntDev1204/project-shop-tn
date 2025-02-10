@@ -67,8 +67,6 @@ class UserService implements IServiceUser
 
     public function activeUser($hash)
     {
-
-
         return $this->userRepo->activeUser($hash);
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\APIException;
-use App\Exceptions\AuthException;
 use App\Http\Requests\UpdateUser;
 use App\Http\Requests\UserReq;
 use App\Mail\ActiveUser;
+use App\Models\User;
 use App\Service\extend\IServiceUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -19,6 +19,22 @@ class UserController extends Controller
     {
         $this->userSV = $userSV;
     }
+
+    public function viewActive($hash_code)
+    {
+        $user = User::where('hash_code', $hash_code)->first();
+        if (!$user) {
+            throw new APIException(404, "user by this hash not found!");
+        }
+
+        $userName = $user->name;
+        $email = $user->email;
+        $avatar = $user->avatar;
+        $hash_code = $user->hash_code;
+
+        return view('active.active', compact('userName', 'email', 'hash_code', 'avatar'));
+    }
+
     public function signup(UserReq $request)
     {
         $data = $request->all();
@@ -50,9 +66,6 @@ class UserController extends Controller
     public function sendMail()
     {
         $user = $this->getAuth();
-        if (!$user) {
-            throw new AuthException('User not authenticated.');
-        }
 
         $isAdmin = in_array($user->role, ['Admin', 'CEO']);
         if ($isAdmin) {
@@ -85,6 +98,6 @@ class UserController extends Controller
     public function activeUsers($hash_code)
     {
         $this->userSV->activeUser($hash_code);
-        return $this->returnJson(null, 202, "active user successfully!");
+        return redirect('http://localhost:3000/login');
     }
 }

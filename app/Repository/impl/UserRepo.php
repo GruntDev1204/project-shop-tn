@@ -3,14 +3,12 @@
 namespace App\Repository\impl;
 
 use App\Exceptions\APIException;
-use App\Exceptions\AuthException;
 use App\Exceptions\AuthorizeException;
 use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
 use App\Repository\extend\IUserRepo;
 use Carbon\Carbon;
-use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Support\Str;
 
 
@@ -109,13 +107,14 @@ class UserRepo implements IUserRepo
     {
         $user = $this->findByHash($hash);
 
-        if (!in_array($user->status, [0])) {
-            throw new AuthorizeException("bạn bị cho cook khỏi server!");
-        }
-
         if (!$user) {
             throw new APIException(404, "user by this hash not found!");
         }
+
+        if (!in_array($user->status, [0, 1])) {
+            throw new AuthorizeException("bạn bị cho cook khỏi server!");
+        }
+
         $user->status = 1;
         $user->email_verified_at = Carbon::now();
         $user->save();
