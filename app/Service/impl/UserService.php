@@ -14,7 +14,7 @@ class UserService implements IServiceUser
         $this->userRepo = $userRepo;
     }
 
-    public function changeRole($hash, $role)
+    public function changeRole($id, $role)
     {
         $roleId =  3;
         switch ($role) {
@@ -28,7 +28,28 @@ class UserService implements IServiceUser
                 throw new APIException(400, "Role not valid!");
                 break;
         }
-        return $this->userRepo->changeRole($hash, $roleId);
+        return $this->userRepo->changeRole($id, $roleId);
+    }
+
+    public function changeStatus($id, $status)
+    {
+        $statusValue = 0;
+        switch ($status) {
+            case 'Active':
+                $statusValue = 1;
+                break;
+            case 'Inactive':
+                $statusValue = 0;
+                break;
+            case 'Blocked':
+                $statusValue = 2;
+                break;
+            default:
+                $statusValue = 0;
+                break;
+        }
+
+        return $this->userRepo->changeStatus($id, $statusValue);
     }
 
     public function getAll()

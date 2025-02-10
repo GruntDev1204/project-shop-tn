@@ -82,17 +82,23 @@ class UserController extends Controller
         }
     }
 
-    public function changeRole($hash, Request $rq)
+    public function changeRole($id, Request $rq)
     {
         $this->authorizeRole('CEO');
+        $roleName = $this->validateField($rq->role, 'role');
 
-        $roleName = $rq->query('role');
-        if (!$roleName) {
-            throw new APIException(400, "Role is required!");
-        }
+        $role = $this->userSV->changeRole($id, $roleName);
+        return $this->returnJson($role, 200, "changed role successfully!");
+    }
 
-        $role = $this->userSV->changeRole($hash, $roleName);
-        return $this->returnJson($role, 202, "changed role successfully!");
+    public function changeStatus($id, Request $req)
+    {
+        $this->authorizeRole('CEO');
+        $status = $this->validateField($req->status, 'status');
+
+        $this->userSV->changeStatus($id, $status);
+
+        return $this->returnJson($status, 200, "changed status successfully!");
     }
 
     public function activeUsers($hash_code)

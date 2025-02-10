@@ -17,7 +17,7 @@
                     <div class="panel-body">
                         <p>Hi {{ $name }},</p>
                         <p>Click the button below to activate your account.</p>
-                        <p><a type="button" href="http://127.0.0.1:8000/api/users/active-view/{{ $hash }}">Activate
+                        <p><a type="button" href="http://127.0.0.1:8000/api/users/active/{{ $hash }}">Activate
                                 Account</a></p>
                     </div>
                 </div>

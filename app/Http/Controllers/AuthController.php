@@ -2,17 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\APIException;
 use App\Exceptions\AuthException;
-use App\Exceptions\AuthorizeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthReq;
+use App\Http\Requests\UpdateAuthReq;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Auth\Middleware\Authorize;
 
 class AuthController extends Controller
 {
-    protected function respondWithToken($role, $token)
+    private function validateCredentials($credentials)
+    {
+        if (!auth()->validate($credentials)) {
+            throw new AuthException("verify failed! your password is incorrect!");
+        }
+    }
+
+    private function verifyLogin($credentials)
+    {
+        $this->checkIsBlocked($credentials['email']);
+        $this->validateCredentials($credentials);
+        $token = auth()->attempt($credentials);
+        return $token;
+    }
+
+    private function respondWithToken($role, $token)
     {
         $data = [
             'access_token' => $token,
@@ -25,26 +40,33 @@ class AuthController extends Controller
 
     public function login(AuthReq $authReq)
     {
-        $role = $authReq->query('role');
-        $credentials = $authReq->only('email', 'password');
-        $this->checkIsBlocked($authReq->email);
+        $role = $authReq->role;
 
-        if (! $token = auth()->attempt($credentials)) {
-            throw new AuthException("login failed");
-        }
+        $credentials = $authReq->only('email', 'password');
+        $token = $this->verifyLogin($credentials);
 
         return $this->respondWithToken($this->checkRoleName($role, $authReq->email), $token);
     }
 
-    public function resetPassword(AuthReq $authReq)
+    public function changePassword(UpdateAuthReq $authReq)
     {
         $user = $this->getAuth();
-        $ps = User::find($user->id);
-        $ps->password =  bcrypt($authReq->password);
-        $ps->save();
 
+        if ($user->email !== $authReq->email) {
+            throw new APIException(422, "email not match!");
+        }
+
+        if ($authReq->password === $authReq->new_password) {
+            return $this->returnJson(null, 202, "your new password is the same as your old password! you don't have to change it!");
+        }
+
+        $this->validateCredentials($authReq->only('email', 'password'));
+
+        $ps = User::find($user->id);
+        $ps->password =  bcrypt($authReq->new_password);
+        $ps->save();
         $this->logout();
-        return $this->returnJson($user, 200, "your password has been reset!");
+        return $this->returnJson(null, 201, "your password has been reset! please re-login");
     }
 
     public function profile()

@@ -7,5 +7,7 @@ use App\Service\InterfaceService as ServiceInterfaceService;
 interface IServiceUser extends ServiceInterfaceService
 {
     public function activeUser($hash);
-    public function changeRole($hash, $role);
+    public function changeRole($id, $role);
+    public function changeStatus($id, $status);
+
 }

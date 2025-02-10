@@ -40,20 +40,35 @@ class UserRepo implements IUserRepo
         return $user;
     }
 
-    public function changeRole($hash, $roleId)
+    public function changeRole($id, $roleId)
     {
-        $user = $this->findByHash($hash);
+        $user = $this->findById($id);
         RoleUser::where('user_id', $user->id)->update(['role_id' => $roleId]);
 
         if ($roleId === 2) {
-            $this->activeUser($hash);
+            $this->activeUser($user->hash_code);
         }
         return Role::find($roleId);
     }
 
+    public function changeStatus($id, $valueStatus)
+    {
+        $user = $this->findById($id);
+        $user->status = $valueStatus;
+        if($user->status === 2){
+            $this->changeRole($id, 3);
+        }
+        $user->save();
+        return $user;
+    }
+
     public function getAll()
     {
-        return User::all();
+        return User::join('role_users', 'role_users.user_id', '=', 'users.id')
+            ->join('roles', 'roles.id', '=', 'role_users.role_id')
+            ->where('roles.name', '!=', 'CEO')
+            ->select('users.*', 'roles.name as role')
+            ->get();
     }
 
     public function findById($id)

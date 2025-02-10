@@ -29,8 +29,12 @@
                         <p>Name : {{ $userName }}</p>
                         <p>Email : {{ $email }}</p>
                         <p>Please click that button to active your account!</p>
-                        <a href="http://127.0.0.1:8000/api/users/active/{{ $hash_code }}" type="button"
-                            class="btn btn-success">Active</a>
+                        <form action="http://127.0.0.1:8000/api/users/active/{{ $hash_code }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-success">Active</button>
+                        </form>
+
                     </div>
                 </div>
             </div>

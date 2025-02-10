@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUser extends FormRequest
+class UpdateAuthReq extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,9 @@ class UpdateUser extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|max:100',
+            'email'   => 'required|exists:users,email',
+            'new_password' => 'required',
+            'password'   => 'required',
         ];
     }
 
@@ -30,17 +32,16 @@ class UpdateUser extends FormRequest
     {
         return [
             'required'      => ':attribute không được để trống',
-            'exists'        => ':attribute không tồn tại',
-            'numeric'       => ':attribute phải là số',
-            'max'           => ':attribute tối đa',
-            'min'           => ':attribute tối thiểu',
+            'exists' => ':attribute không tồn tại',
         ];
     }
 
     public function attributes()
     {
         return [
-            'name'   => 'tên người dùng',
+            'email'   => 'email',
+            'password' => 'password',
+            'new_password' => 'new password',
         ];
     }
 }

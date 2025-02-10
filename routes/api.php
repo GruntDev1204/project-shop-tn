@@ -33,21 +33,34 @@ Route::middleware(['api'])->group(function () {
         'prefix' => 'auth'
     ], function () {
         Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
-        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+        Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
         Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
         Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
-        Route::post('reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword']);
-        Route::get('check-auth', [\App\Http\Controllers\AuthController::class, 'checkAuth']);
+        // Route::post('reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword']);
+        Route::put('change-password', [\App\Http\Controllers\AuthController::class, 'changePassword']);
+        Route::post('check-auth', [\App\Http\Controllers\AuthController::class, 'checkAuth']);
     });
 
     Route::group([
         'prefix' => 'users'
     ], function () {
+        Route::get('/', [App\Http\Controllers\UserController::class, 'getAll']);
         Route::post('/', [App\Http\Controllers\UserController::class, 'signup']);
-        Route::put('/', [App\Http\Controllers\UserController::class, 'updateProfile']);
-        Route::get('/active/send-mail', [App\Http\Controllers\UserController::class, 'sendMail']);
-        Route::get('/active/{hash}', [App\Http\Controllers\UserController::class, 'activeUsers']);
-        Route::get('/change-role/{hash}', [App\Http\Controllers\UserController::class, 'changeRole']);
-        Route::get('/active-view/{hash}', [App\Http\Controllers\UserController::class, 'viewActive']);
+        Route::put('/profile', [App\Http\Controllers\UserController::class, 'updateProfile']);
+
+        Route::group([
+            'prefix' => 'active'
+        ], function () {
+            Route::post('/send-mail', [App\Http\Controllers\UserController::class, 'sendMail']);
+            Route::put('/{hash}', [App\Http\Controllers\UserController::class, 'activeUsers']);
+            Route::get('/{hash}', [App\Http\Controllers\UserController::class, 'viewActive']);
+        });
+
+        Route::group([
+            'prefix' => 'manager'
+        ], function () {
+            Route::put('/{id}/role', [App\Http\Controllers\UserController::class, 'changeRole']);
+            Route::put('/{id}/status', [App\Http\Controllers\UserController::class, 'changeStatus']);
+        });
     });
 });

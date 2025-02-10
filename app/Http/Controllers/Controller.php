@@ -28,11 +28,11 @@ class Controller extends BaseController
     protected function getAuth()
     {
         $user = auth()->user();
-        $this->checkIsBlocked($user->email);
         if (!$user) {
-            throw new AuthException('User not authenticated.');
+            throw new AuthException('User not authenticated, please login and try again!');
         }
 
+        $this->checkIsBlocked($user->email);
         $roleUser = RoleUser::where('user_id', $user->id)->first();
         if (!$roleUser) {
             throw new AuthException('User does not have a valid role.');
@@ -52,7 +52,7 @@ class Controller extends BaseController
     {
         $user = $this->getAuth();
         if ($user->role !== $role) {
-            throw new AuthorizeException("You do not have permission to perform this action!");
+            throw new AuthorizeException("You do not have permission to perform this action! required role: " . $role);
         }
     }
 
@@ -82,5 +82,13 @@ class Controller extends BaseController
         }
 
         return $role->name;
+    }
+
+    protected function validateField($col, $colName)
+    {
+        if (!$col) {
+            throw new APIException(400, $colName . " is required!");
+        }
+        return $col;
     }
 }
