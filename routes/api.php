@@ -36,9 +36,12 @@ Route::middleware(['api'])->group(function () {
         Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
         Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
         Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
-        // Route::post('reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword']);
+        Route::post('request-forgot-password', [\App\Http\Controllers\AuthController::class, 'requestForgotPassword']);
+        Route::get('request-forgot-password', [\App\Http\Controllers\AuthController::class, 'reqForgotPasswordForm']);
+        Route::put('reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword']);
         Route::put('change-password', [\App\Http\Controllers\AuthController::class, 'changePassword']);
         Route::post('check-auth', [\App\Http\Controllers\AuthController::class, 'checkAuth']);
+
     });
 
     Route::group([
