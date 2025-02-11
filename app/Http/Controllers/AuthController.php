@@ -46,7 +46,7 @@ class AuthController extends Controller
             'email' => $email,
             'token' => $token,
             'otp_token' => $hashedOtp,
-            'created_at' => Carbon::now()
+            'expires_at' => Carbon::now()->addMinutes(5)
         ]);
 
         return [
@@ -70,7 +70,7 @@ class AuthController extends Controller
         }
 
         if (!$resetRecord) {
-            throw new APIException(404, "Reset request not found!");
+            throw new APIException(404, "Reset request not found or expired!");
         }
 
         return $resetRecord;
@@ -84,8 +84,12 @@ class AuthController extends Controller
         }
 
         if (!Hash::check($otp, $resetRecord->otp_token)) {
-            // DB::table('password_reset_tokens')->where('email', $email)->delete();
             throw new APIException(422, "Invalid OTP! Please try again.");
+        }
+
+        if (Carbon::now()->greaterThan($resetRecord->expires_at)) {
+            DB::table('password_reset_tokens')->where('email', $email)->delete();
+            throw new APIException(410, "The OTP has expired. Please request a new one.");
         }
 
         return $resetRecord;
@@ -96,7 +100,7 @@ class AuthController extends Controller
         $data = [
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_at' => Carbon::now()->addHours(24)->toDateTimeString(),
+            'expires_at' => Carbon::now()->addHours(12)->toDateTimeString(),
             'role' => $role
         ];
         return $this->returnJson($data, 200, null);
@@ -130,7 +134,7 @@ class AuthController extends Controller
         }
     }
 
-    public function reqForgotPasswordForm(Request $request)
+    public function forgotPasswordForm(Request $request)
     {
         $token = $request->query('token');
         if (!$token) {
@@ -138,13 +142,14 @@ class AuthController extends Controller
         }
 
         $resetRecord = $this->findReqSecurity(null, $token);
+        $expire_time = $resetRecord->expires_at;
         $user = User::where('email', $resetRecord->email)->first();
 
         if (!$user) {
             throw new APIException(404, "user by this email not found!");
         }
 
-        return view('security.reset_password_form', compact('token', 'user'));
+        return view('security.reset_password_form', compact('token', 'user', 'expire_time'));
     }
 
     public function requestForgotPassword(Request $request)
@@ -160,7 +165,7 @@ class AuthController extends Controller
 
         $data = $this->generateOtp($email);
 
-        Mail::to($email)->send(new RequestForgotPassword($email, $data['token'], $data['otp']));
+        Mail::to($email)->send(new RequestForgotPassword($user->name, Carbon::now(), Carbon::now()->addMinutes(5), $data['token'], $data['otp']));
         return $this->returnJson(null, 202, "email to reset your password sent  successfully!");
     }
 

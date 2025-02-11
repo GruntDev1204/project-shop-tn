@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('email')->primary();
             $table->string('token');
             $table->string('otp_token')->unique();
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('expires_at');
         });
     }
 

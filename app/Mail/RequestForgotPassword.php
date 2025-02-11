@@ -3,32 +3,33 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class RequestForgotPassword extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $email;
+    private $name;
     private $token;
+    private $expired;
+    private $created;
     private $otp;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($email, $token, $otp)
+    public function __construct($name, $created  , $expired , $token, $otp)
     {
-        $this->email       = $email;
+        $this->name       = $name;
         $this->token         = $token;
+        $this->expired         = $expired;
+        $this->created         = $created;
         $this->otp      = $otp;
     }
 
     public function build()
     {
-        return $this->subject("request forgot password!")->view('mail.reset_password', ['email' => $this->email, 'token' => $this->token , 'otp' => $this->otp]);
+        return $this->subject("Request to reset password!")->view('mail.reset_password', ['name' => $this->name, 'token' => $this->token , 'otp' => $this->otp  , 'expired' => $this->expired , 'created' => $this->created]);
     }
 }

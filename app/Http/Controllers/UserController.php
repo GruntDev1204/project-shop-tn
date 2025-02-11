@@ -103,7 +103,12 @@ class UserController extends Controller
 
     public function activeUsers($hash_code)
     {
-        $this->userSV->activeUser($hash_code);
-        return redirect('http://localhost:3000/login');
+        $user = $this->userSV->activeUser($hash_code);
+
+        if($user->status === 1){
+            return $this->returnJson(null, 201, "your account is already active!");
+        }
+
+        return $this->returnJson(null, 200, "active user successfully!");
     }
 }

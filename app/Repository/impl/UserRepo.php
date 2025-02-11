@@ -130,6 +130,10 @@ class UserRepo implements IUserRepo
             throw new AuthorizeException("bạn bị cho cook khỏi server!");
         }
 
+        if($user->status === 1){
+            return $user;
+        }
+
         $user->status = 1;
         $user->email_verified_at = Carbon::now();
         $user->save();
