@@ -9,6 +9,7 @@ use App\Mail\ActiveUser;
 use App\Models\User;
 use App\Service\extend\IServiceUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
@@ -70,6 +71,7 @@ class UserController extends Controller
         $isAdmin = in_array($user->role, ['Admin', 'CEO']);
         if ($isAdmin) {
             $this->userSV->activeUser($user->hash_code);
+
             return $this->returnJson([
                 'role' => $user->role
             ], 200, "you don't need to activate users because you are an admin!");
@@ -77,7 +79,10 @@ class UserController extends Controller
             if ($user->status === 1) {
                 return $this->returnJson(null, 202, "your account is already active!");
             }
-            Mail::to($user->email)->send(new ActiveUser($user->name, $user->hash_code, 'Active User'));
+
+            $record = $this->generateOtp($user->email, $user->hash_code, 'active');
+
+            Mail::to($user->email)->send(new ActiveUser($user->name, $user->hash_code,  $record['otp'], 'Active User'));
             return $this->returnJson($user->role, 202, "email sent successfully , please check your email address and continue!");
         }
     }
@@ -101,11 +106,17 @@ class UserController extends Controller
         return $this->returnJson($status, 200, "changed status successfully!");
     }
 
-    public function activeUsers($hash_code)
+    public function activeUsers($hash_code, Request $req)
     {
-        $user = $this->userSV->activeUser($hash_code);
+        $otp = $req->otp;
+        if (!$otp) {
+            throw new APIException(422, "OTP is required!");
+        }
+        $this->verifyOTP($hash_code, $otp, null ,  'active');
+        $status = $this->userSV->activeUser($hash_code);
 
-        if($user->status === 1){
+        DB::table('manager_tokens')->where('token', $hash_code)->where('type', 'active')->delete();
+        if ($status === 1) {
             return $this->returnJson(null, 201, "your account is already active!");
         }
 

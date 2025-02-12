@@ -854,8 +854,10 @@
                                                                         we offer!</p>
                                                                     <p class="es-text-mobile-size-14"
                                                                         style="font-size:14px">&nbsp; &nbsp; &nbsp;To
-                                                                        get started, please activate your account by
-                                                                        clicking the button below. </p>
+                                                                        get started,please get the OTP code. </p>
+                                                                    <p class="es-text-mobile-size-14"
+                                                                    style="font-size:14px">&nbsp; &nbsp; &nbsp;Then activate your account by
+                                                                    clicking the button below. </p>
                                                                     <p class="es-text-mobile-size-14"
                                                                         style="font-size:14px"><br></p>
                                                                     <p class="es-text-mobile-size-14"
@@ -867,6 +869,17 @@
                                                                             <strong>Active
                                                                                 Account </strong>
                                                                         </a></p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td align="left" class="es-p10b es-text-2510">
+                                                                    <p style="line-height:40px;font-size:20px">
+                                                                        <strong>&nbsp; &nbsp; &nbsp;<span
+                                                                                style="color:#faf9f9"> YOUR OTP :
+                                                                                &nbsp;<span
+                                                                                    class="es-text-mobile-size-22"
+                                                                                    style="font-size:22px">{{ $otp }}</span></span></strong>
+                                                                    </p>
                                                                 </td>
                                                             </tr>
                                                             <tr>

@@ -14,6 +14,10 @@ class UserService implements IServiceUser
         $this->userRepo = $userRepo;
     }
 
+    public function findByHash($hash){
+        return $this->userRepo->findByHash($hash);
+    }
+
     public function changeRole($id, $role)
     {
         $roleId =  3;

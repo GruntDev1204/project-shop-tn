@@ -13,9 +13,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 
 class AuthController extends Controller
@@ -33,66 +31,6 @@ class AuthController extends Controller
         $this->validateCredentials($credentials);
         $token = auth()->attempt($credentials);
         return $token;
-    }
-
-    private function generateOtp($email)
-    {
-        $token = Str::uuid();
-        $otp = random_int(100000, 999999);
-        $hashedOtp = bcrypt($otp);
-
-        DB::table('password_reset_tokens')->where('email', $email)->delete();
-        DB::table('password_reset_tokens')->insert([
-            'email' => $email,
-            'token' => $token,
-            'otp_token' => $hashedOtp,
-            'expires_at' => Carbon::now()->addMinutes(5)
-        ]);
-
-        return [
-            'otp' => $otp,
-            'token' => $token
-        ];
-    }
-
-    private function findReqSecurity($email = null, $token = null)
-    {
-        if ($email !== null) {
-            $resetRecord = DB::table('password_reset_tokens')
-                ->where('email', $email)
-                ->first();
-        } else if ($token !== null) {
-            $resetRecord = DB::table('password_reset_tokens')
-                ->where('token', $token)
-                ->first();
-        } else {
-            throw new APIException(422, "Token or email is required!");
-        }
-
-        if (!$resetRecord) {
-            throw new APIException(404, "Reset request not found or expired!");
-        }
-
-        return $resetRecord;
-    }
-
-    private function verifyOTP($token, $otp, $email)
-    {
-        $resetRecord = $this->findReqSecurity($email, null);
-        if ($resetRecord->token !== $token) {
-            throw new APIException(422, "Invalid or expired reset link!");
-        }
-
-        if (!Hash::check($otp, $resetRecord->otp_token)) {
-            throw new APIException(422, "Invalid OTP! Please try again.");
-        }
-
-        if (Carbon::now()->greaterThan($resetRecord->expires_at)) {
-            DB::table('password_reset_tokens')->where('email', $email)->delete();
-            throw new APIException(410, "The OTP has expired. Please request a new one.");
-        }
-
-        return $resetRecord;
     }
 
     private function respondWithToken($role, $token)
@@ -141,7 +79,7 @@ class AuthController extends Controller
             return $this->returnJson(null, 422, "token is required");
         }
 
-        $resetRecord = $this->findReqSecurity(null, $token);
+        $resetRecord = $this->findReqSecurity(null, $token , 'repassword');
         $expire_time = $resetRecord->expires_at;
         $user = User::where('email', $resetRecord->email)->first();
 
@@ -163,7 +101,7 @@ class AuthController extends Controller
             throw new APIException(404, "user by this email not found!");
         }
 
-        $data = $this->generateOtp($email);
+        $data = $this->generateOtp($email , null , 'repassword');
 
         Mail::to($email)->send(new RequestForgotPassword($user->name, Carbon::now(), Carbon::now()->addMinutes(5), $data['token'], $data['otp']));
         return $this->returnJson(null, 202, "email to reset your password sent  successfully!");
@@ -176,11 +114,11 @@ class AuthController extends Controller
         if (!$user) {
             throw new APIException(404, "user by this email not found!");
         }
-        $this->verifyOTP($request->query('token'), $request->otp, $request->email);
+        $this->verifyOTP($request->query('token'), $request->otp, $request->email , 'repassword');
         $user->password = bcrypt($request->new_password);
         $user->save();
 
-        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('manager_tokens')->where('email', $request->email)->where('type', 'repassword')->delete();
         return $this->returnJson(null, 201, "your password has been reset! please re-login");
     }
 
@@ -215,6 +153,6 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken('Admin' , auth()->refresh());
     }
 }

@@ -36,7 +36,9 @@
                         <p class="text-center mb-5"><img src={{ $avatar }} alt="avatar" /></p>
                         <p>Name : {{ $userName }}</p>
                         <p>Email : {{ $email }}</p>
-                        <p>Please click that button to active your account!</p>
+                        <p>Please type your OTP , what were sent to your email!</p>
+                        <p> OTP : <input class="form-control" type="number" v-model="otp"/> </p>
+                       <p> And then click that button to active your account!</p>
                         <button type="submit" class="btn btn-success"
                             v-on:click="changePassowrd('{{ $hash_code }}')">Active</button>
                     </div>
@@ -46,5 +48,4 @@
     </div>
 </body>
 <script src="/assets/active.js"></script>
-
 </html>

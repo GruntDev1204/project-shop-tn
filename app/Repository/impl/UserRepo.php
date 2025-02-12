@@ -11,7 +11,6 @@ use App\Repository\extend\IUserRepo;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
-
 class UserRepo implements IUserRepo
 {
     private function getRole($data)
@@ -30,7 +29,7 @@ class UserRepo implements IUserRepo
         }
     }
 
-    private function findByHash($hash)
+    public function findByHash($hash)
     {
         $user = User::where('hash_code', $hash)->first();
         if (!$user) {
@@ -131,11 +130,12 @@ class UserRepo implements IUserRepo
         }
 
         if($user->status === 1){
-            return $user;
+            return 1;
         }
 
         $user->status = 1;
         $user->email_verified_at = Carbon::now();
         $user->save();
+        return 0;
     }
 }

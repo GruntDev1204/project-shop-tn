@@ -8,13 +8,85 @@ use App\Exceptions\AuthorizeException;
 use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+
+    protected function findReqSecurity($email = null, $token = null ,  $type)
+    {
+        if ($email !== null) {
+            $resetRecord = DB::table('manager_tokens')
+                ->where('email', $email)->where('type' , $type)
+                ->first();
+        } else if ($token !== null) {
+            $resetRecord = DB::table('manager_tokens')
+                ->where('token', $token)->where('type' , $type)
+                ->first();
+        } else {
+            throw new APIException(422, "Token or email is required!");
+        }
+
+        if (!$resetRecord) {
+            throw new APIException(404, "Reset request not found or expired!");
+        }
+
+        return $resetRecord;
+    }
+
+    protected function verifyOTP($token, $otp, $email = null , $type)
+    {
+        if($email === null) {
+            $resetRecord = $this->findReqSecurity(null, $token , $type);
+        }else{
+            $resetRecord = $this->findReqSecurity($email, null , $type);
+        }
+
+        if ($email !== null && $resetRecord->token !== $token) {
+            throw new APIException(422, "Invalid or expired link!");
+        }
+
+        if (!Hash::check($otp, $resetRecord->otp_token)) {
+            throw new APIException(422, "Invalid OTP! Please try again.");
+        }
+
+        if (Carbon::now()->greaterThan($resetRecord->expires_at)) {
+            DB::table('manager_tokens')->where('email', $email)->delete();
+            throw new APIException(410, "The OTP has expired. Please request a new one.");
+        }
+
+        return $resetRecord;
+    }
+
+    protected function generateOtp($email, $token = null , $type)
+    {
+        if ($token === null) {
+            $token = Str::uuid();
+        }
+        $otp = random_int(100000, 999999);
+        $hashedOtp = bcrypt($otp);
+
+        DB::table('manager_tokens')->where('email', $email)->where('type', $type)->delete();
+        DB::table('manager_tokens')->insert([
+            'email' => $email,
+            'token' => $token,
+            'otp_token' => $hashedOtp,
+            'type' => $type,
+            'expires_at' => Carbon::now()->addMinutes(5)
+        ]);
+
+        return [
+            'otp' => $otp,
+            'token' => $token
+        ];
+    }
 
     protected function returnJson($data, $code, $mesage)
     {
