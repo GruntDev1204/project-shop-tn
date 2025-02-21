@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('manager_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
+            $table->string('token_id', 500)->primary();
             $table->string('token');
             $table->string('otp_token')->unique();
-            $table->enum('type', ['repassword', 'active'])->unique();
+            $table->enum('type', ['repassword', 'active', 'login', 'enable_2fa', 'disable_2fa']);
+            $table->string('email');
             $table->timestamp('expires_at');
         });
     }

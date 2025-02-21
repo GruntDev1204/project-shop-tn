@@ -22,6 +22,7 @@ class UserSeed extends Seeder
                 'password' => bcrypt(env('USER_CEO_PASSWORD')),
                 'status' => 1,
                 'email_verified_at' => now(),
+                'is_enabled_2fa' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

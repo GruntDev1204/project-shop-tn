@@ -14,7 +14,8 @@ class UserService implements IServiceUser
         $this->userRepo = $userRepo;
     }
 
-    public function findByHash($hash){
+    public function findByHash($hash)
+    {
         return $this->userRepo->findByHash($hash);
     }
 
@@ -93,5 +94,15 @@ class UserService implements IServiceUser
     public function activeUser($hash)
     {
         return $this->userRepo->activeUser($hash);
+    }
+
+    public function enable2FA($hash)
+    {
+        return $this->userRepo->enable2FA($hash);
+    }
+
+    public function findByEmail($email)
+    {
+        return $this->userRepo->findByEmail($email);
     }
 }

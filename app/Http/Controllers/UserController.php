@@ -6,36 +6,11 @@ use App\Exceptions\APIException;
 use App\Http\Requests\UpdateUser;
 use App\Http\Requests\UserReq;
 use App\Mail\ActiveUser;
-use App\Models\User;
-use App\Service\extend\IServiceUser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
-    protected $userSV;
-
-    public function __construct(IServiceUser $userSV)
-    {
-        $this->userSV = $userSV;
-    }
-
-    public function viewActive($hash_code)
-    {
-        $user = User::where('hash_code', $hash_code)->first();
-        if (!$user) {
-            throw new APIException(404, "user by this hash not found!");
-        }
-
-        $userName = $user->name;
-        $email = $user->email;
-        $avatar = $user->avatar;
-        $hash_code = $user->hash_code;
-
-        return view('active.active', compact('userName', 'email', 'hash_code', 'avatar'));
-    }
-
     public function signup(UserReq $request)
     {
         $data = $request->all();
@@ -64,29 +39,6 @@ class UserController extends Controller
         return $this->returnJson($data, 200, "success!");
     }
 
-    public function sendMail()
-    {
-        $user = $this->getAuth();
-
-        $isAdmin = in_array($user->role, ['Admin', 'CEO']);
-        if ($isAdmin) {
-            $this->userSV->activeUser($user->hash_code);
-
-            return $this->returnJson([
-                'role' => $user->role
-            ], 200, "you don't need to activate users because you are an admin!");
-        } else {
-            if ($user->status === 1) {
-                return $this->returnJson(null, 202, "your account is already active!");
-            }
-
-            $record = $this->generateOtp($user->email, $user->hash_code, 'active');
-
-            Mail::to($user->email)->send(new ActiveUser($user->name, $user->hash_code,  $record['otp'], 'Active User'));
-            return $this->returnJson($user->role, 202, "email sent successfully , please check your email address and continue!");
-        }
-    }
-
     public function changeRole($id, Request $rq)
     {
         $this->authorizeRole('CEO');
@@ -106,20 +58,94 @@ class UserController extends Controller
         return $this->returnJson($status, 200, "changed status successfully!");
     }
 
+    public function sendMail()
+    {
+        $user = $this->getAuth();
+
+        $isAdmin = in_array($user->role, ['Admin', 'CEO']);
+        if ($isAdmin) {
+            $this->userSV->activeUser($user->hash_code);
+
+            return $this->returnJson([
+                'role' => $user->role
+            ], 200, "you don't need to activate users because you are an admin!");
+        } else {
+            if ($user->status === 1) {
+                return $this->returnJson(null, 202, "your account is already active!");
+            }
+
+            $record = $this->generateOtp($user->email, $user->hash_code, 'active');
+
+            Mail::to($user->email)->queue(new ActiveUser($user->name, $user->hash_code,  $record['otp']));
+            return $this->returnJson($user->role, 202, "email sent successfully , please check your email address and continue!");
+        }
+    }
+
+    public function enable2FAReq()
+    {
+        $user = $this->getAuth();
+        $notEnable = $this->userSV->findByHash($user->hash_code)->is_enabled_2fa;
+
+        if (!$notEnable) {
+            return $this->returnJson(true, 200, "You already have enabled 2FA!");
+        } else {
+            $record = $this->generateOtp($user->email, $user->hash_code, 'enable_2fa');
+            Mail::to($user->email)->queue(new ActiveUser($user->name, $user->hash_code, $record['otp']));
+            return $this->returnJson(null, 200, "Email sent successfully , please check your email to enable 2FA!");
+        }
+    }
+
+    public function enable2FAForm($hash)
+    {
+        $user = $this->userSV->findByHash($hash);
+        return view('', compact('user'));
+    }
+
+    public function enable2FA(Request $request)
+    {
+        $this->validateField($request->hash, 'uuid');
+        $this->validateField($request->otp, 'otp');
+
+        $this->verifyOTP($request->hash, $request->otp, 'enable_2fa');
+        $notEnable = $this->userSV->enable2FA($request->hash);
+        $this->deleteOTP($request->hash, 'enable_2fa');
+
+        if (!$notEnable) {
+            return $this->returnJson(true, 200, 'you already enabled 2fa!');
+        } else {
+            return $this->returnJson(true, 202, 'you enabled 2fa!');
+        }
+    }
+
     public function activeUsers($hash_code, Request $req)
     {
         $otp = $req->otp;
         if (!$otp) {
             throw new APIException(422, "OTP is required!");
         }
-        $this->verifyOTP($hash_code, $otp, null ,  'active');
+        $this->verifyOTP($hash_code, $otp, 'active');
         $status = $this->userSV->activeUser($hash_code);
 
-        DB::table('manager_tokens')->where('token', $hash_code)->where('type', 'active')->delete();
+        $this->deleteOTP($hash_code, 'active');
         if ($status === 1) {
             return $this->returnJson(null, 201, "your account is already active!");
         }
 
         return $this->returnJson(null, 200, "active user successfully!");
+    }
+
+    public function viewActive($hash_code)
+    {
+        $user = $this->userSV->findByHash($hash_code);
+        if (!$user) {
+            throw new APIException(404, "user by this hash not found!");
+        }
+
+        $userName = $user->name;
+        $email = $user->email;
+        $avatar = $user->avatar;
+        $hash_code = $user->hash_code;
+
+        return view('active.active', compact('userName', 'email', 'hash_code', 'avatar'));
     }
 }

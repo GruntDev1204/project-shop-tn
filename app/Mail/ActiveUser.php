@@ -20,16 +20,15 @@ class ActiveUser extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($name, $hash, $otp, $title)
+    public function __construct($name, $hash, $otp)
     {
         $this->name       = $name;
         $this->hash         = $hash;
         $this->otp          =    $otp;
-        $this->title      = $title;
     }
 
     public function build()
     {
-        return $this->subject($this->title)->view('mail.active_user', ['name' => $this->name, 'hash' => $this->hash , 'otp' => $this->otp]);
+        return $this->subject('Active User!')->view('mail.active_user', ['name' => $this->name, 'hash' => $this->hash , 'otp' => $this->otp]);
     }
 }

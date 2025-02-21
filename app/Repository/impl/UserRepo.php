@@ -54,7 +54,7 @@ class UserRepo implements IUserRepo
     {
         $user = $this->findById($id);
         $user->status = $valueStatus;
-        if($user->status === 2){
+        if ($user->status === 2) {
             $this->changeRole($id, 3);
         }
         $user->save();
@@ -87,6 +87,7 @@ class UserRepo implements IUserRepo
             'email' => $data['email'],
             'avatar' => $data['avatar'],
             'password' => bcrypt($data['password']),
+            'is_enabled_2fa' => false,
             'status' => 0
         ]);
         $this->getRole($data);
@@ -129,7 +130,7 @@ class UserRepo implements IUserRepo
             throw new AuthorizeException("bạn bị cho cook khỏi server!");
         }
 
-        if($user->status === 1){
+        if ($user->status === 1) {
             return 1;
         }
 
@@ -137,5 +138,28 @@ class UserRepo implements IUserRepo
         $user->email_verified_at = Carbon::now();
         $user->save();
         return 0;
+    }
+
+    public function enable2FA($hash)
+    {
+        $user = $this->findByHash($hash);
+
+        if ($user->is_enabled_2fa) {
+            return false;
+        } else {
+            $user->is_enabled_2fa = true;
+            $user->save();
+        }
+        return true;
+    }
+
+    public function findByEmail($email)
+    {
+        $user =  User::where('email', $email)->first();
+        if (!$user) {
+            throw new APIException(404, "user not found!");
+        }
+
+        return $user;
     }
 }

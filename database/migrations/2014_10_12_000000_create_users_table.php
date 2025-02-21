@@ -20,8 +20,9 @@ return new class extends Migration
             $table->string('avatar')->nullable()->default('https://firebasestorage.googleapis.com/v0/b/hotrung1204-36f50.appspot.com/o/Ngoc_Red%2Fdf.jpg?alt=media&token=813909dc-52e3-43d2-b2cd-51c1b912c44e');
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
-            $table->rememberToken();
+            $table->string('remember_token', 500)->nullable();
             $table->integer('status')->default(0);
+            $table->boolean('is_enabled_2fa')->default(false);
             $table->timestamps();
         });
     }

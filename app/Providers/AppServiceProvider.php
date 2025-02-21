@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
+    public function register()
     {
         $this->app->bind(ExtendIProductRepo::class, ImplProductRepo::class);
         $this->app->bind(ExtendIServiceProduct::class, ImplProductService::class);

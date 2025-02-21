@@ -33,6 +33,7 @@ Route::middleware(['api'])->group(function () {
         'prefix' => 'auth'
     ], function () {
         Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
+        Route::post('login-2fa', [\App\Http\Controllers\AuthController::class, 'login2FA']);
         Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
         Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
         Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
@@ -58,6 +59,15 @@ Route::middleware(['api'])->group(function () {
             Route::put('/{hash}', [App\Http\Controllers\UserController::class, 'activeUsers']);
             Route::get('/{hash}', [App\Http\Controllers\UserController::class, 'viewActive']);
         });
+
+        Route::group([
+            'prefix' => 'setting'
+        ], function () {
+            Route::post('/enable-2fa', [App\Http\Controllers\UserController::class, 'sendMail']);
+            Route::put('/{hash}', [App\Http\Controllers\UserController::class, 'activeUsers']);
+            Route::get('/{hash}', [App\Http\Controllers\UserController::class, 'viewActive']);
+        });
+
 
         Route::group([
             'prefix' => 'manager'
