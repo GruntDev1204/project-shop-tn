@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\APIException;
-use App\Exceptions\AuthException;
 use App\Http\Requests\ProductReq;
 use App\Service\extend\IServiceProduct as ExtendIServiceProduct;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -18,9 +18,16 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function getAll()
+    public function getAll(Request $request)
     {
-        $data = $this->productSV->getAll();
+        $requestParam = $request->query();
+        $user = auth()->user();
+
+        if ($user && ($this->hasRole('Admin') || $this->hasRole('CEO'))) {
+            $data = $this->productSV->getAllProduct($requestParam);
+        } else {
+            $data = $this->productSV->getAll($requestParam);
+        }
 
         if (!empty($data)) {
             return $this->returnJson($data, 200, "success!");
@@ -34,7 +41,7 @@ class ProductController extends Controller
      */
     public function create(ProductReq $request)
     {
-        $this->authorizeRole('Admin');
+        $this->authorizeRole(['Admin', 'CEO']);
         $data = $request->all();
 
         $result = $this->productSV->create($data);
@@ -61,7 +68,7 @@ class ProductController extends Controller
 
     public function update($id, ProductReq $request)
     {
-        $this->authorizeRole('Admin');
+        $this->authorizeRole(['Admin', 'CEO']);
         $data = $request->all();
         $result = $this->productSV->update($id, $data);
 
@@ -77,7 +84,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorizeRole('Admin');
+        $this->authorizeRole(['Admin', 'CEO']);
         $result = $this->productSV->delete($id);
         if ($result) {
             return $this->returnJson($result, 200, "success!");

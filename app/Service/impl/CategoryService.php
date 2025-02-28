@@ -13,9 +13,9 @@ class CategoryService implements IServiceCategory
     {
         $this->categoryRepo = $categoryRepo;
     }
-    public function getAll()
+    public function getAll($req)
     {
-        return $this->categoryRepo->getAll();
+        return $this->categoryRepo->getAll($req);
     }
 
     public function findById($id)

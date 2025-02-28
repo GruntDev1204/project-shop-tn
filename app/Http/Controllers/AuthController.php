@@ -59,7 +59,7 @@ class AuthController extends Controller
             Mail::to($user->email)->queue(new RequestLogin2FA($user->name, $otp['expires_at'], $otp['otp']));
             return $this->returnJson(null, 202, "email sent successfully , please check your email address and continue!");
         } else {
-            return $this->respondWithToken($this->checkRoleName($role, $authReq->email), $token);
+            return $this->respondWithToken($this->validateRoleName($role, $authReq->email), $token);
         }
     }
 
@@ -77,7 +77,7 @@ class AuthController extends Controller
         $user->save();
         $this->deleteOTP($user->hash_code, 'login');
 
-        return $this->respondWithToken($this->checkRoleName($request->role, $request->email), $token);
+        return $this->respondWithToken($this->validateRoleName($request->role, $request->email), $token);
     }
 
     public function profile()

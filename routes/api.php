@@ -42,14 +42,13 @@ Route::middleware(['api'])->group(function () {
         Route::put('reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword']);
         Route::put('change-password', [\App\Http\Controllers\AuthController::class, 'changePassword']);
         Route::post('check-auth', [\App\Http\Controllers\AuthController::class, 'checkAuth']);
-
     });
 
     Route::group([
         'prefix' => 'users'
     ], function () {
         Route::get('/', [App\Http\Controllers\UserController::class, 'getAll']);
-        Route::post('/', [App\Http\Controllers\UserController::class, 'signup']);
+        Route::post('/register', [App\Http\Controllers\UserController::class, 'signup']);
         Route::put('/profile', [App\Http\Controllers\UserController::class, 'updateProfile']);
 
         Route::group([

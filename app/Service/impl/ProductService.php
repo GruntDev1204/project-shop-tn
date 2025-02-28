@@ -13,14 +13,18 @@ class ProductService implements IServiceProduct
         $this->productRepo = $productRepo;
     }
 
+    public function getAllProduct($reqParam){
+        return $this->productRepo->getAllProduct($reqParam);
+    }
+
     public function changeStatus($id)
     {
         $this->productRepo->changeStatus($id);
     }
 
-    public function getAll()
+    public function getAll($reqParam)
     {
-        return $this->productRepo->getAll();
+        return $this->productRepo->getAll($reqParam);
     }
 
     public function findById($id)

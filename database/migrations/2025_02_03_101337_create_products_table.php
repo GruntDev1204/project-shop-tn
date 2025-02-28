@@ -17,8 +17,11 @@ return new class extends Migration
             $table->boolean('status');
             $table->double('price');
             $table->string('image');
+            $table->bigInteger('quantity');
+            $table->text('origin')->default('hàng lậu');
+            $table->double('discount')->default(0);
+            $table->longText('description')->nullable()->default(null);
             $table->timestamps();
-            
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });

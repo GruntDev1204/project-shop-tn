@@ -57,9 +57,9 @@ class UserService implements IServiceUser
         return $this->userRepo->changeStatus($id, $statusValue);
     }
 
-    public function getAll()
+    public function getAll($req)
     {
-        return $this->userRepo->getAll();
+        return $this->userRepo->getAll($req);
     }
 
     public function findById($id)

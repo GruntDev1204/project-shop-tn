@@ -38,7 +38,7 @@ class Controller extends BaseController
 
     protected function checkIsBlocked($email)
     {
-        $user = $this->userSV->findByEmail($email);
+        $user = User::where('email', $email)->first();
         if (!$user) {
             throw new APIException(404, "User does not exist!");
         }
@@ -134,18 +134,35 @@ class Controller extends BaseController
         return $user;
     }
 
-    protected function authorizeRole($role)
+    protected function hasRole(string|array $role)
     {
-        $user = $this->getAuth();
-        if ($user->role !== $role) {
-            throw new AuthorizeException("You do not have permission to perform this action! required role: " . $role);
+        $userRole = $this->getAuth()->role;
+
+        if (is_array($role)) {
+            return in_array($userRole, $role);
         }
+
+        return $userRole === $role;
     }
 
-    protected function checkRoleName($roleName, $email)
+
+    protected function authorizeRole(string|array $roles)
     {
-        $user = $this->userSV->findByEmail($email);
-        $roleUser = RoleUser::where('user_id', $user->id)->first();
+        if (is_string($roles)) {
+            $roles = [$roles];
+        }
+
+        foreach ($roles as $role) {
+            if ($this->hasRole($role)) {
+                return true;
+            }
+        }
+        throw new AuthorizeException("You do not have permission! Required roles: " . implode(', ', $roles));
+    }
+
+    protected function getUserRole($userId)
+    {
+        $roleUser = RoleUser::where('user_id', $userId)->first();
         if (!$roleUser) {
             throw new AuthException('User does not have a valid role.');
         }
@@ -154,6 +171,14 @@ class Controller extends BaseController
         if (!$role) {
             throw new APIException(404, 'Role not found.');
         }
+
+        return $role->name;
+    }
+
+    protected function validateRoleName($roleName, $email)
+    {
+        $user = User::where('email', $email)->first();
+        $role = $this->getUserRole($user->id);
 
         if ($roleName === 'Admin' && $role->name === 'Customer') {
             throw new AuthorizeException("You do not have permission to perform this action!");

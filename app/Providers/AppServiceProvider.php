@@ -15,6 +15,8 @@ use App\Service\extend\IServiceCategory;
 use App\Service\extend\IServiceUser;
 use App\Service\impl\CategoryService;
 use App\Service\impl\UserService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Date;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +40,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        Carbon::setTestNow(now());
+        Date::use(Carbon::class);
     }
 }

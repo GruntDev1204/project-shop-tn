@@ -28,10 +28,10 @@ class UserController extends Controller
         return $this->returnJson($dataUpdate, 200, "update successful!");
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
         $this->authorizeRole('CEO');
-        $data = $this->userSV->getAll();
+        $data = $this->userSV->getAll($request);
         if (!$data || empty($data)) {
             throw new APIException(500, "failure!");
         }

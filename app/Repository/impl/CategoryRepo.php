@@ -8,7 +8,7 @@ use App\Repository\extend\ICategoryRepo;
 
 class CategoryRepo implements ICategoryRepo
 {
-    public function getAll()
+    public function getAll($req)
     {
         return Category::all();
     }
