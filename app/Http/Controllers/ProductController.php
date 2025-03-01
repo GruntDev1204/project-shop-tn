@@ -23,11 +23,13 @@ class ProductController extends Controller
         $requestParam = $request->query();
         $user = auth()->user();
 
-        if ($user && ($this->hasRole('Admin') || $this->hasRole('CEO'))) {
-            $data = $this->productSV->getAllProduct($requestParam);
+        if ($user && ($this->hasRole(['Admin', 'CEO']))) {
+            $dataPage = $this->productSV->getAllProduct($requestParam);
         } else {
-            $data = $this->productSV->getAll($requestParam);
+            $dataPage = $this->productSV->getAll($requestParam);
         }
+
+        $data = $this->getDataPaginate($dataPage);
 
         if (!empty($data)) {
             return $this->returnJson($data, 200, "success!");

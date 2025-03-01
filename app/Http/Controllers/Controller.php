@@ -27,6 +27,17 @@ class Controller extends BaseController
         $this->userSV = $userSV;
     }
 
+    protected function getDataPaginate($dataPage)
+    {
+        return [
+            'page' => $dataPage->currentPage(),
+            'page_size' => $dataPage->perPage(),
+            'total_items' => $dataPage->total(),
+            'total_pages' => $dataPage->lastPage(),
+            'items' => $dataPage->items(),
+        ];
+    }
+
     protected function returnJson($data, $code, $mesage)
     {
         return response()->json([

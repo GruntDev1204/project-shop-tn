@@ -13,18 +13,21 @@ class ProductService implements IServiceProduct
         $this->productRepo = $productRepo;
     }
 
-    public function getAllProduct($reqParam){
+    public function getAllProduct($reqParam)
+    {
+        $reqParam['page_size']  = $reqParam['page_size'] ?? 2;
         return $this->productRepo->getAllProduct($reqParam);
+    }
+
+    public function getAll($reqParam)
+    {
+        $reqParam['page_size']  = $reqParam['page_size'] ?? 2;
+        return $this->productRepo->getAll($reqParam);
     }
 
     public function changeStatus($id)
     {
         $this->productRepo->changeStatus($id);
-    }
-
-    public function getAll($reqParam)
-    {
-        return $this->productRepo->getAll($reqParam);
     }
 
     public function findById($id)
@@ -34,7 +37,7 @@ class ProductService implements IServiceProduct
 
     public function create($data)
     {
-        $data['status'] = $data['status'] ?? 1;
+        $data['status'] = $data['status'] ?? true;
         $data['image'] = $data['image'] ?? "./public/images/electronics.jpg";
         return $this->productRepo->create($data);
     }

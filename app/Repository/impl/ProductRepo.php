@@ -4,9 +4,10 @@ namespace App\Repository\impl;
 
 use App\Exceptions\APIException;
 use App\Models\Product;
+use App\Repository\BaseRepository;
 use App\Repository\extend\IProductRepo;
 
-class ProductRepo implements IProductRepo
+class ProductRepo extends BaseRepository implements IProductRepo
 {
     private function queryData($reqParam, $query, $isPublic = false)
     {
@@ -35,14 +36,14 @@ class ProductRepo implements IProductRepo
     {
         $query = Product::query();
         $this->queryData($reqParam, $query);
-        return $query->get();
+        return $this->paginateQuery($reqParam, $query);
     }
 
     public function getAll($reqParam)
     {
         $query = Product::query();
         $this->queryData($reqParam, $query, true);
-        return $query->get();
+        $this->paginateQuery($reqParam, $query);
     }
 
     public function findById($id)
