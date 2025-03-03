@@ -39,9 +39,9 @@ class CartController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function getById($id)
     {
-        //
+        return $this->returnJson($this->cartSV->findById($id), 200, "success!");
     }
 
     /**

@@ -16,10 +16,15 @@ class CartRepo extends BaseRepository implements ICartRepo
 
     public function findById($id)
     {
-        $data = Cart::find($id);
+        $data = Cart::join('products', 'products.id', '=', 'carts.product_id')
+            ->select('carts.*', 'products.name as product_name', 'products.image')
+            ->where('carts.id', $id)
+            ->first();
+
         if (!$data) {
-            throw new APIException(404, "data not found!");
+            throw new APIException(404, "cart not found!");
         }
+
         return $data;
     }
 
