@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\APIException;
 use App\Http\Requests\CartReq;
 use App\Models\Cart;
 use App\Service\extend\IServiceCart;
@@ -22,8 +23,12 @@ class CartController extends Controller
     public function getAll()
     {
         $user = $this->getAuth();
-        $req['user_id'] = $user->id;
-        return $this->returnJson($this->cartSV->getAll($req), 200, "success!");
+        if ($user  && $this->hasRole(['Admin', 'CEO'])) {
+            $req = 'hello Admin';
+            return $this->returnJson($this->cartSV->getAll($req), 200, "success!");
+        } else {
+            return $this->returnJson($this->cartSV->managerOwnCarts($user->id), 200, "success!");
+        }
     }
 
     /**
@@ -41,7 +46,10 @@ class CartController extends Controller
      */
     public function getById($id)
     {
-        return $this->returnJson($this->cartSV->findById($id), 200, "success!");
+        $user = $this->getAuth();
+        $dataCart = $this->cartSV->managerOwnCart($id, $user->id);
+
+        return $this->returnJson($dataCart, 200, "success!");
     }
 
     /**

@@ -25,6 +25,21 @@ class CartService  implements IServiceCart
         return $this->cartRepo->findById($id);
     }
 
+    public function managerOwnCart($id, $id_user)
+    {
+        $cart = $this->cartRepo->findById($id);
+        if ($cart->user_id != $id_user) {
+            throw new APIException(403, "You don't have permission to access this cart!");
+        }
+
+        return $this->cartRepo->managerOwnCart($id, $id_user);
+    }
+
+    public function managerOwnCarts($id_user)
+    {
+        return $this->cartRepo->managerOwnCarts($id_user);
+    }
+
     public function create($data)
     {
         $product = $this->productRepo->findById($data['product_id']);
