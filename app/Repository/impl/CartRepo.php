@@ -3,19 +3,20 @@
 namespace App\Repository\impl;
 
 use App\Exceptions\APIException;
-use App\Models\Category;
-use App\Repository\extend\ICategoryRepo;
+use App\Models\Cart;
+use App\Repository\BaseRepository;
+use App\Repository\extend\ICartRepo;
 
-class CategoryRepo implements ICategoryRepo
+class CartRepo extends BaseRepository implements ICartRepo
 {
     public function getAll($req)
     {
-        return Category::all();
+        return Cart::Join('products', 'products.id', '=', 'carts.product_id')->select('carts.*', 'products.name as product_name', 'products.image',)->where('user_id', $req['user_id'])->get();
     }
 
     public function findById($id)
     {
-        $data = Category::find($id);
+        $data = Cart::find($id);
         if (!$data) {
             throw new APIException(404, "data not found!");
         }
@@ -24,8 +25,7 @@ class CategoryRepo implements ICategoryRepo
 
     public function create($data)
     {
-        $category = Category::create($data);
-        return $category;
+        return Cart::create($data);
     }
 
     public function update($id, $data)

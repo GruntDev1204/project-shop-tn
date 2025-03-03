@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    private $productSV;
+    private ExtendIServiceProduct $productSV;
 
     public function __construct(ExtendIServiceProduct $productSV)
     {
@@ -24,7 +24,7 @@ class ProductController extends Controller
         $user = auth()->user();
 
         if ($user && ($this->hasRole(['Admin', 'CEO']))) {
-            $dataPage = $this->productSV->getAllProduct($requestParam);
+            $dataPage = $this->productSV->managerAllProducts($requestParam);
         } else {
             $dataPage = $this->productSV->getAll($requestParam);
         }

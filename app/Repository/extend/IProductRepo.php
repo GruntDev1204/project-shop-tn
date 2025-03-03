@@ -7,5 +7,5 @@ use App\Repository\RepositoryInterface as RepositoryInterface;
 interface IProductRepo extends RepositoryInterface
 {
     public function changeStatus($id);
-    public function getAllProduct($reqParam);
+    public function managerAllProducts($reqParam);
 }

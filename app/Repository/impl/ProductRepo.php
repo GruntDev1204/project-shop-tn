@@ -32,7 +32,7 @@ class ProductRepo extends BaseRepository implements IProductRepo
         }
     }
 
-    public function getAllProduct($reqParam)
+    public function managerAllProducts($reqParam)
     {
         $query = Product::query();
         $this->queryData($reqParam, $query);
@@ -43,7 +43,7 @@ class ProductRepo extends BaseRepository implements IProductRepo
     {
         $query = Product::query();
         $this->queryData($reqParam, $query, true);
-        $this->paginateQuery($reqParam, $query);
+        return $this->paginateQuery($reqParam, $query);
     }
 
     public function findById($id)
@@ -52,12 +52,11 @@ class ProductRepo extends BaseRepository implements IProductRepo
         if (!$data) {
             throw new APIException(404, "data not found!");
         }
-        return Product::find($id);
+        return $data;
     }
 
     public function create($data)
     {
-        $data['origin'] =  $data['origin'] ?? 'Hàng lậu';
         return Product::create($data);
     }
 

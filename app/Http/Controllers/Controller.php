@@ -191,11 +191,11 @@ class Controller extends BaseController
         $user = User::where('email', $email)->first();
         $role = $this->getUserRole($user->id);
 
-        if ($roleName === 'Admin' && $role->name === 'Customer') {
+        if ($roleName === 'Admin' && $role === 'Customer') {
             throw new AuthorizeException("You do not have permission to perform this action!");
         }
 
-        return $role->name;
+        return $role;
     }
 
     protected function validateField($col, $colName)

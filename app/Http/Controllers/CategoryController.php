@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Exceptions\APIException;
 use App\Http\Requests\CategoryReq;
 use App\Service\extend\IServiceCategory;
-use Illuminate\Http\Client\Request;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    protected $categorySV;
+    private IServiceCategory $categorySV;
 
     public function __construct(IServiceCategory $categorySV)
     {

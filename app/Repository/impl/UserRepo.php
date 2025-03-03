@@ -76,7 +76,7 @@ class UserRepo implements IUserRepo
         if (!$data) {
             throw new APIException(404, "user not found!");
         }
-        return User::find($id);
+        return $data;
     }
 
     public function create($data)
