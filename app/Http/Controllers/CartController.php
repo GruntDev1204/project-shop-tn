@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\APIException;
 use App\Http\Requests\CartReq;
 use App\Models\Cart;
 use App\Service\extend\IServiceCart;
@@ -47,40 +46,32 @@ class CartController extends Controller
     public function getById($id)
     {
         $user = $this->getAuth();
-        $dataCart = $this->cartSV->managerOwnCart($id, $user->id);
+        if ($user->role === 'Admin' || $user->role === 'CEO') {
+            $dataCart = $this->cartSV->findById($id);
+        } else {
+            $dataCart = $this->cartSV->managerOwnCart($id, $user->id);
+        }
 
         return $this->returnJson($dataCart, 200, "success!");
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Cart $cart)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cart $cart)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Cart $cart)
+    public function update($id, CartReq $request)
     {
-        //
+        $user = $this->getAuth();
+        $this->cartSV->managerOwnCart($id, $user->id);
+        return $this->returnJson($this->cartSV->update($id, $request->all()), 200, "success!");
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Cart $cart)
+    public function destroy($id)
     {
-        //
+        $user = $this->getAuth();
+        $this->cartSV->managerOwnCart($id, $user->id);
+        return $this->returnJson($this->cartSV->delete($id), 204, "success!");
     }
 }

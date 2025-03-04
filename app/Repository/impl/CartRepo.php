@@ -9,15 +9,30 @@ use App\Repository\extend\ICartRepo;
 
 class CartRepo extends BaseRepository implements ICartRepo
 {
+
+    private function queryCart()
+    {
+        return Cart::join('products', 'products.id', '=', 'carts.product_id')
+            ->select('carts.*', 'products.name as product_name', 'products.image');
+    }
+
+    private function findCart($id)
+    {
+        $cart = Cart::find($id);
+        if (!$cart) {
+            throw new APIException(404, "cart not found!");
+        }
+        return $cart;
+    }
+
     public function getAll($req)
     {
-        return Cart::Join('products', 'products.id', '=', 'carts.product_id')->select('carts.*', 'products.name as product_name', 'products.image',)->get();
+        return $this->queryCart()->get();
     }
 
     public function findById($id)
     {
-        $data = Cart::join('products', 'products.id', '=', 'carts.product_id')
-            ->select('carts.*', 'products.name as product_name', 'products.image')
+        $data = $this->queryCart()
             ->where('carts.id', $id)
             ->first();
 
@@ -35,23 +50,21 @@ class CartRepo extends BaseRepository implements ICartRepo
 
     public function update($id, $data)
     {
-        $category = $this->findById($id);
-        $category->update($data);
-        return $category;
+        $cart = $this->findCart($id);
+        $cart->update($data);
+        return $cart;
     }
 
     public function delete($id)
     {
-        $category = $this->findById($id);
-        $category->delete();
+        $cart = $this->findCart($id);
+        $cart->delete();
         return true;
     }
 
-    public function managerOwnCart($id, $id_user)
+    public function managerOwnCart($id, $idUser)
     {
-        $data = Cart::join('products', 'products.id', '=', 'carts.product_id')
-            ->select('carts.*', 'products.name as product_name', 'products.image')
-            ->where('carts.id', $id)->where('carts.user_id', $id_user)->first();
+        $data = $this->queryCart()->where('carts.id', $id)->where('carts.user_id', $idUser)->first();
 
         if (!$data) {
             throw new APIException(404, "cart not found!");
@@ -60,13 +73,11 @@ class CartRepo extends BaseRepository implements ICartRepo
         return $data;
     }
 
-    public function managerOwnCarts($id_user)
+    public function managerOwnCarts($idUser)
     {
-        $data = Cart::join('products', 'products.id', '=', 'carts.product_id')
-            ->select('carts.*', 'products.name as product_name', 'products.image')
-            ->where('carts.user_id', $id_user)->get();
+        $data = $this->queryCart()->where('carts.user_id', $idUser)->get();
 
-        if (!$data) {
+        if ($data->isEmpty()) {
             throw new APIException(404, "cart not found!");
         }
 

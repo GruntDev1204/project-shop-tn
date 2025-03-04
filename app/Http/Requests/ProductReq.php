@@ -27,6 +27,8 @@ class ProductReq extends FormRequest
             'name'   => 'required|max:100',
             'price'   => 'required|numeric|min:1000',
             'category_id'   => 'required|exists:categories,id',
+            'quantity' => 'required|integer|min:1',
+            "origin" => 'min:3|max:100',
         ];
     }
 
@@ -37,6 +39,7 @@ class ProductReq extends FormRequest
             'exists'        => ':attribute không tồn tại',
             'numeric'       => ':attribute phải là số',
             'max'           => ':attribute tối đa',
+            "min"        => ':attribute tối thiểu',
         ];
     }
 
