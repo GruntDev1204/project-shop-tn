@@ -83,4 +83,19 @@ class CartRepo extends BaseRepository implements ICartRepo
 
         return $data;
     }
+
+    public function managerOwnCartsById($idUser, array $idCarts)
+    {
+        $data = $this->queryCart()->whereIn('carts.id', $idCarts)->where('carts.user_id', $idUser)->get();
+
+        if ($data->isEmpty()) {
+            throw new APIException(404, "cart not found!");
+        }
+
+        if (count($data) !== count($idCarts)) {
+            throw new APIException(403, "One or more cart items were not yourself!");
+        }
+
+        return $data;
+    }
 }

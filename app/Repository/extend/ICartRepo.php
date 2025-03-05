@@ -8,4 +8,5 @@ interface ICartRepo extends RepositoryInterface
 {
     public function  managerOwnCart($id, $idUser);
     public function managerOwnCarts($idUser);
+    public function managerOwnCartsById($idUser, array $idCart);
 }

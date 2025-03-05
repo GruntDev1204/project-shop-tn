@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('status');
-            $table->double('price');
+            $table->decimal('price', 10, 2);
             $table->string('image');
             $table->bigInteger('quantity');
             $table->text('origin')->default('hàng lậu');

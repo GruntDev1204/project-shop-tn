@@ -37,6 +37,14 @@ Route::middleware(['api'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\CartController::class, 'update']);
     });
 
+    Route::prefix('orders')->group(function () {
+        // Route::get('/', [App\Http\Controllers\CartController::class, 'getAll']);
+        // Route::get('/{id}', [App\Http\Controllers\CartController::class, 'getById']);
+        Route::post('/', [App\Http\Controllers\OrderController::class, 'create']);
+        // Route::delete('/{id}', [App\Http\Controllers\CartController::class, 'destroy']);
+        // Route::put('/{id}', [App\Http\Controllers\CartController::class, 'update']);
+    });
+
     Route::group([
         'prefix' => 'auth'
     ], function () {
