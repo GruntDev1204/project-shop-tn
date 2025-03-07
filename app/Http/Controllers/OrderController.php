@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OrderReq;
 use App\Models\Order;
 use App\Service\extend\IServiceOrder;
-use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -16,12 +15,26 @@ class OrderController extends Controller
         $this->orderService = $orderService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getById($id)
     {
-        //
+        $user = $this->getAuth();
+        if ($this->hasRole(['Admin', 'CEO'])) {
+            return $this->returnJson($this->orderService->findById($id), 200, "success!");
+        }
+        return $this->returnJson($this->orderService->ownOrder($id, $user->id), 200, "success!");
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function getAll()
+    {
+        $user = $this->getAuth();
+        if ($this->hasRole(['Admin', 'CEO'])) {
+            return $this->returnJson($this->orderService->getAll("any"), 200, "success!");
+        }
+
+        return $this->returnJson($this->orderService->ownOrders($user->id), 200, "success!");
     }
 
     /**
@@ -36,35 +49,13 @@ class OrderController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Order $order)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Order $order)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Order $order)
+    public function update($id)
     {
-        //
+        $user = $this->getAuth();
+        $data['role'] = $user->role;
+        return $this->returnJson($this->orderService->update($id, $data), 200, "change status successfully!");
     }
 
     /**
@@ -72,6 +63,7 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        //
+        $this->authorizeRole(['Admin', 'CEO']);
+        return $this->returnJson($this->orderService->delete($order->id), 204, "success!");
     }
 }

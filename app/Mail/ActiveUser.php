@@ -4,8 +4,6 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class ActiveUser extends Mailable
@@ -29,6 +27,6 @@ class ActiveUser extends Mailable
 
     public function build()
     {
-        return $this->subject('Active User!')->view('mail.active_user', ['name' => $this->name, 'hash' => $this->hash , 'otp' => $this->otp]);
+        return $this->subject('Active User!')->view('mail.active_user', ['name' => $this->name, 'hash' => $this->hash, 'otp' => $this->otp]);
     }
 }

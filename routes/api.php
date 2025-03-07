@@ -38,11 +38,12 @@ Route::middleware(['api'])->group(function () {
     });
 
     Route::prefix('orders')->group(function () {
-        // Route::get('/', [App\Http\Controllers\CartController::class, 'getAll']);
-        // Route::get('/{id}', [App\Http\Controllers\CartController::class, 'getById']);
+        Route::get('/', [App\Http\Controllers\OrderController::class, 'getAll']);
+        Route::get('/{id}', [App\Http\Controllers\CartController::class, 'getById']);
         Route::post('/', [App\Http\Controllers\OrderController::class, 'create']);
-        // Route::delete('/{id}', [App\Http\Controllers\CartController::class, 'destroy']);
-        // Route::put('/{id}', [App\Http\Controllers\CartController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\CartController::class, 'destroy']);
+        Route::put('/{id}', [App\Http\Controllers\CartController::class, 'update']);
+        Route::put('/{id}', [App\Http\Controllers\OrderController::class, 'update']);
     });
 
     Route::group([
@@ -70,7 +71,7 @@ Route::middleware(['api'])->group(function () {
         Route::group([
             'prefix' => 'active'
         ], function () {
-            Route::post('/send-mail', [App\Http\Controllers\UserController::class, 'sendMail']);
+            Route::post('/send-mail', [App\Http\Controllers\UserController::class, 'activeByMail']);
             Route::put('/{hash}', [App\Http\Controllers\UserController::class, 'activeUsers']);
             Route::get('/{hash}', [App\Http\Controllers\UserController::class, 'viewActive']);
         });
@@ -78,7 +79,7 @@ Route::middleware(['api'])->group(function () {
         Route::group([
             'prefix' => 'setting'
         ], function () {
-            Route::post('/enable-2fa', [App\Http\Controllers\UserController::class, 'sendMail']);
+            Route::post('/enable-2fa', [App\Http\Controllers\UserController::class, '']);
             Route::put('/{hash}', [App\Http\Controllers\UserController::class, 'activeUsers']);
             Route::get('/{hash}', [App\Http\Controllers\UserController::class, 'viewActive']);
         });

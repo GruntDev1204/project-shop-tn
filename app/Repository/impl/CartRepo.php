@@ -92,8 +92,11 @@ class CartRepo extends BaseRepository implements ICartRepo
             throw new APIException(404, "cart not found!");
         }
 
-        if (count($data) !== count($idCarts)) {
-            throw new APIException(403, "One or more cart items were not yourself!");
+        $validCartIds = $data->pluck('id')->toArray();
+        $invalidIds = array_diff($idCarts, $validCartIds);
+
+        if (!empty($invalidIds)) {
+            throw new APIException(403, "Một trong những giỏ hàng đéo phải của mày!");
         }
 
         return $data;

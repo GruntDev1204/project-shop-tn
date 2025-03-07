@@ -3,18 +3,28 @@
 namespace  App\Service\impl;
 
 use App\Exceptions\APIException;
+use App\Mail\OrderNotifi;
 use App\Repository\extend\ICartRepo;
+use App\Repository\extend\IDetailOrderRepo;
 use App\Repository\extend\IOrderRepo;
+use App\Repository\extend\IProductRepo;
+use App\Repository\extend\IUserRepo;
 use App\Service\extend\IServiceOrder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderService implements IServiceOrder
 {
-    protected $cartRepo, $orderRepo;
+    protected $cartRepo, $orderRepo, $productRepo, $detailOrderRepo, $userRepo;
 
-    public function __construct(ICartRepo $cartRepo, IOrderRepo $orderRepository)
+    public function __construct(ICartRepo $cartRepo, IOrderRepo $orderRepository, IProductRepo $productRepo, IDetailOrderRepo $detailOrderRepo, IUserRepo $userRepo)
     {
         $this->cartRepo = $cartRepo;
         $this->orderRepo = $orderRepository;
+        $this->productRepo = $productRepo;
+        $this->detailOrderRepo = $detailOrderRepo;
+        $this->userRepo = $userRepo;
     }
 
     private function getTotalPrice($dataCart)
@@ -31,18 +41,65 @@ class OrderService implements IServiceOrder
         return $totalPrice;
     }
 
-    public function getAll($req) {}
+    private function syncData($dataCart, $idOrder)
+    {
+        foreach ($dataCart as $cart) {
+            $this->detailOrderRepo->create(['order_id' => $idOrder, 'product_id' => $cart->product_id, 'quantity' => $cart->quantity, 'unit_price' => $cart->price]);
+            $product = $this->productRepo->findById($cart->product_id);
+            if ($product->quantity < $cart->quantity) {
+                throw new APIException(400, "Not enough stock available!");
+            }
+            $product->quantity -= $cart->quantity;
+            $product->save();
+            $cart->delete();
+        }
+    }
 
-    public function findById($id) {}
+    public function getAll($req)
+    {
+        return $this->orderRepo->getAll($req);
+    }
+
+    public function findById($id)
+    {
+        return $this->orderRepo->findById($id);
+    }
 
     public function create($data)
     {
-        $dataCart = $this->cartRepo->managerOwnCartsById($data['user_id'], $data['cart_ids']);
-        $data['total_price'] = $this->getTotalPrice($dataCart);
-        return $this->orderRepo->create($data);
+        return DB::transaction(function () use ($data) {
+            $dataCart = $this->cartRepo->managerOwnCartsById($data['user_id'], $data['cart_ids']);
+            $data['total_price'] = $this->getTotalPrice($dataCart);
+
+            $rs = $this->orderRepo->create($data);
+            if ($rs == null) {
+                throw new APIException(500, "Create order failed!");
+            }
+
+            $this->syncData($dataCart, $rs->id);
+            $user = $this->userRepo->findById($data['user_id']);
+            Mail::to($user->email)->queue(new OrderNotifi($rs->order_code, $user->name,  $rs->total_price, Carbon::now()->addDays(3)));
+            return $rs;
+        });
     }
 
-    public function update($id, $data) {}
+    public function update($id, $data)
+    {
+        return $this->orderRepo->update($id, $data);
+    }
 
-    public function delete($id) {}
+    public function delete($id)
+    {
+        return $this->orderRepo->delete($id);
+    }
+
+    public function ownOrder($userId, $id)
+    {
+        return $this->orderRepo->ownOrder($userId, $id);
+    }
+
+    public function ownOrders($userId)
+    {
+        return $this->orderRepo->ownOrders($userId);
+    }
 }

@@ -4,11 +4,13 @@ namespace App\Providers;
 
 use App\Repository\extend\ICartRepo;
 use App\Repository\extend\ICategoryRepo as ExtendICategoryRepo;
+use App\Repository\extend\IDetailOrderRepo;
 use App\Repository\extend\IOrderRepo;
 use App\Repository\extend\IProductRepo as ExtendIProductRepo;
 use App\Repository\extend\IUserRepo;
 use App\Repository\impl\CartRepo;
 use App\Repository\impl\CategoryRepo;
+use App\Repository\impl\DetailOrderRepo;
 use App\Repository\impl\OrderRepo;
 use App\Service\extend\IServiceProduct as ExtendIServiceProduct;
 use App\Service\impl\ProductService as ImplProductService;
@@ -47,6 +49,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(IOrderRepo::class, OrderRepo::class);
         $this->app->bind(IServiceOrder::class, OrderService::class);
+
+        $this->app->bind(IDetailOrderRepo::class, DetailOrderRepo::class);
     }
 
     /**

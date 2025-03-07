@@ -58,7 +58,7 @@ class UserController extends Controller
         return $this->returnJson($status, 200, "changed status successfully!");
     }
 
-    public function sendMail()
+    public function activeByMail()
     {
         $user = $this->getAuth();
 

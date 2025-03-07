@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('order_code')->unique();
-            $table->boolean('status')->default(false);
+            $table->boolean('is_paid')->default(false);
+            $table->boolean('is_canceled')->default(false);
             $table->decimal('total_price', 10, 2);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

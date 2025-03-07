@@ -27,6 +27,21 @@ class Controller extends BaseController
         $this->userSV = $userSV;
     }
 
+    private function getUserRole($userId)
+    {
+        $roleUser = RoleUser::where('user_id', $userId)->first();
+        if (!$roleUser) {
+            throw new AuthException('User does not have a valid role.');
+        }
+
+        $role = Role::find($roleUser->role_id);
+        if (!$role) {
+            throw new APIException(404, 'Role not found.');
+        }
+
+        return $role->name;
+    }
+
     protected function getDataPaginate($dataPage)
     {
         return [
@@ -130,17 +145,8 @@ class Controller extends BaseController
         }
 
         $this->checkIsBlocked($user->email);
-        $roleUser = RoleUser::where('user_id', $user->id)->first();
-        if (!$roleUser) {
-            throw new AuthException('User does not have a valid role.');
-        }
-
-        $role = Role::find($roleUser->role_id);
-        if (!$role) {
-            throw new APIException(404, 'Role not found.');
-        }
-
-        $user->role = $role->name;
+        $role = $this->getUserRole($user->id);
+        $user->role = $role;
 
         return $user;
     }
@@ -156,7 +162,6 @@ class Controller extends BaseController
         return $userRole === $role;
     }
 
-
     protected function authorizeRole(string|array $roles)
     {
         if (is_string($roles)) {
@@ -169,21 +174,6 @@ class Controller extends BaseController
             }
         }
         throw new AuthorizeException("You do not have permission! Required roles: " . implode(', ', $roles));
-    }
-
-    protected function getUserRole($userId)
-    {
-        $roleUser = RoleUser::where('user_id', $userId)->first();
-        if (!$roleUser) {
-            throw new AuthException('User does not have a valid role.');
-        }
-
-        $role = Role::find($roleUser->role_id);
-        if (!$role) {
-            throw new APIException(404, 'Role not found.');
-        }
-
-        return $role->name;
     }
 
     protected function validateRoleName($roleName, $email)
