@@ -8,7 +8,10 @@ use App\Repository\extend\IDetailOrderRepo;
 
 class DetailOrderRepo extends BaseRepository implements IDetailOrderRepo
 {
-    public function getAll($req) {}
+    public function getAll($req)
+    {
+        return DetailOrder::join('products', 'products.id', '=', 'detail_orders.product_id')->where('order_id', $req['order_id'])->select('products.name as product_name',  'products.image', 'detail_orders.*')->get();
+    }
 
     public function findById($id) {}
 
@@ -26,5 +29,8 @@ class DetailOrderRepo extends BaseRepository implements IDetailOrderRepo
 
     public function update($id, $data) {}
 
-    public function delete($id) {}
+    public function delete($orderId)
+    {
+        return DetailOrder::where('order_id', $orderId)->delete();
+    }
 }

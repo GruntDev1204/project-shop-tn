@@ -76,11 +76,11 @@ class CartRepo extends BaseRepository implements ICartRepo
     public function managerOwnCarts($idUser)
     {
         $data = $this->queryCart()->where('carts.user_id', $idUser)->get();
-
         if ($data->isEmpty()) {
             throw new APIException(404, "cart not found!");
         }
 
+        
         return $data;
     }
 

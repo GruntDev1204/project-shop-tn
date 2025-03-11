@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CartReq;
-use App\Models\Cart;
 use App\Service\extend\IServiceCart;
-use Illuminate\Http\Request;
 
 class CartController extends Controller
 {

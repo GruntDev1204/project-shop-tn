@@ -3,16 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailOrder;
+use App\Service\extend\IServiceDetailOrder;
 use Illuminate\Http\Request;
 
 class DetailOrderController extends Controller
 {
+    private $orderSV;
+
+    public function __construct(IServiceDetailOrder $orderService)
+    {
+        $this->orderSV = $orderService;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getAll(Request $request)
     {
-        //
+        $this->getAuth();
+        $this->validateField($request->query('order_id'), 'Id of order');
+        return $this->returnJson($this->orderSV->getAll($request), 200, "success!");
     }
 
     /**

@@ -19,10 +19,12 @@ use App\Repository\impl\ProductRepo as ImplProductRepo;
 use App\Repository\impl\UserRepo;
 use App\Service\extend\IServiceCart;
 use App\Service\extend\IServiceCategory;
+use App\Service\extend\IServiceDetailOrder;
 use App\Service\extend\IServiceOrder;
 use App\Service\extend\IServiceUser;
 use App\Service\impl\CartService;
 use App\Service\impl\CategoryService;
+use App\Service\impl\DetailOrderService;
 use App\Service\impl\OrderService;
 use App\Service\impl\UserService;
 use Carbon\Carbon;
@@ -51,6 +53,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IServiceOrder::class, OrderService::class);
 
         $this->app->bind(IDetailOrderRepo::class, DetailOrderRepo::class);
+        $this->app->bind(IServiceDetailOrder::class, DetailOrderService::class);
     }
 
     /**

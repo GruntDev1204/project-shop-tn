@@ -46,6 +46,10 @@ Route::middleware(['api'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\OrderController::class, 'update']);
     });
 
+    Route::prefix('detail-orders')->group(function () {
+        Route::get('/', [App\Http\Controllers\DetailOrderController::class, 'getAll']);
+    });
+
     Route::group([
         'prefix' => 'auth'
     ], function () {

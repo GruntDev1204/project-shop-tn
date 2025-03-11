@@ -41,17 +41,22 @@ class OrderService implements IServiceOrder
         return $totalPrice;
     }
 
-    private function syncData($dataCart, $idOrder)
+    private function syncData($dataCart = [], $idOrder, $isDelete = false)
     {
-        foreach ($dataCart as $cart) {
-            $this->detailOrderRepo->create(['order_id' => $idOrder, 'product_id' => $cart->product_id, 'quantity' => $cart->quantity, 'unit_price' => $cart->price]);
-            $product = $this->productRepo->findById($cart->product_id);
-            if ($product->quantity < $cart->quantity) {
-                throw new APIException(400, "Not enough stock available!");
+        if ($isDelete) {
+            $this->detailOrderRepo->delete($idOrder);
+            return;
+        } else {
+            foreach ($dataCart as $cart) {
+                $this->detailOrderRepo->create(['order_id' => $idOrder, 'product_id' => $cart->product_id, 'quantity' => $cart->quantity, 'unit_price' => $cart->price]);
+                $product = $this->productRepo->findById($cart->product_id);
+                if ($product->quantity < $cart->quantity) {
+                    throw new APIException(400, "Not enough stock available now!");
+                }
+                $product->quantity -= $cart->quantity;
+                $product->save();
+                $cart->delete();
             }
-            $product->quantity -= $cart->quantity;
-            $product->save();
-            $cart->delete();
         }
     }
 
@@ -83,15 +88,19 @@ class OrderService implements IServiceOrder
         });
     }
 
+    public function delete($id)
+    {
+        $this->findById($id);
+        $this->orderRepo->delete($id);
+        $this->syncData([], $id, true);
+        return true;
+    }
+
     public function update($id, $data)
     {
         return $this->orderRepo->update($id, $data);
     }
 
-    public function delete($id)
-    {
-        return $this->orderRepo->delete($id);
-    }
 
     public function ownOrder($userId, $id)
     {

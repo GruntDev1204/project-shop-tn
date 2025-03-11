@@ -53,13 +53,14 @@ class Controller extends BaseController
         ];
     }
 
-    protected function returnJson($data, $code, $mesage)
+    protected function returnJson($data, $code, $message)
     {
-        return response()->json([
+        $response = [
             'status' => $code,
-            'message' => $mesage,
-            'data' => $data
-        ], $code);
+            'message' => $message,
+            'data' => $data,
+        ];
+        return response()->json($response, $code);
     }
 
     protected function checkIsBlocked($email)
