@@ -39,15 +39,18 @@ Route::middleware(['api'])->group(function () {
 
     Route::prefix('orders')->group(function () {
         Route::get('/', [App\Http\Controllers\OrderController::class, 'getAll']);
-        Route::get('/{id}', [App\Http\Controllers\CartController::class, 'getById']);
+        Route::get('/{id}', [App\Http\Controllers\OrderController::class, 'getById']);
         Route::post('/', [App\Http\Controllers\OrderController::class, 'create']);
-        Route::delete('/{id}', [App\Http\Controllers\CartController::class, 'destroy']);
-        Route::put('/{id}', [App\Http\Controllers\CartController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\OrderController::class, 'destroy']);
         Route::put('/{id}', [App\Http\Controllers\OrderController::class, 'update']);
     });
 
     Route::prefix('detail-orders')->group(function () {
         Route::get('/', [App\Http\Controllers\DetailOrderController::class, 'getAll']);
+    });
+
+    Route::prefix('sale-reports')->group(function () {
+        Route::get('/', [App\Http\Controllers\SaleReportController::class, 'getAll']);
     });
 
     Route::group([

@@ -8,6 +8,7 @@ use App\Repository\extend\ICartRepo;
 use App\Repository\extend\IDetailOrderRepo;
 use App\Repository\extend\IOrderRepo;
 use App\Repository\extend\IProductRepo;
+use App\Repository\extend\ISaleReportRepo;
 use App\Repository\extend\IUserRepo;
 use App\Service\extend\IServiceOrder;
 use Illuminate\Support\Carbon;
@@ -16,15 +17,27 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderService implements IServiceOrder
 {
-    protected $cartRepo, $orderRepo, $productRepo, $detailOrderRepo, $userRepo;
+    protected $cartRepo, $orderRepo, $productRepo, $detailOrderRepo, $userRepo, $saleReportRP;
 
-    public function __construct(ICartRepo $cartRepo, IOrderRepo $orderRepository, IProductRepo $productRepo, IDetailOrderRepo $detailOrderRepo, IUserRepo $userRepo)
+    public function __construct(ICartRepo $cartRepo, IOrderRepo $orderRepository, IProductRepo $productRepo, IDetailOrderRepo $detailOrderRepo, IUserRepo $userRepo, ISaleReportRepo $saleReportRP)
     {
         $this->cartRepo = $cartRepo;
         $this->orderRepo = $orderRepository;
         $this->productRepo = $productRepo;
         $this->detailOrderRepo = $detailOrderRepo;
         $this->userRepo = $userRepo;
+        $this->saleReportRP = $saleReportRP;
+    }
+
+    private function syncDataSR($data)
+    {
+        foreach ($data as $dt) {
+            $this->saleReportRP->create([
+                'product_id' => $dt->product_id,
+                'quantity' => $dt->quantity,
+                'price' => $dt->unit_price,
+            ]);
+        }
     }
 
     private function getTotalPrice($dataCart)
@@ -98,7 +111,12 @@ class OrderService implements IServiceOrder
 
     public function update($id, $data)
     {
-        return $this->orderRepo->update($id, $data);
+        $rs =  $this->orderRepo->update($id, $data);
+        if ($rs->is_paid) {
+            $dataDetailOrder = $this->detailOrderRepo->getAll(['order_id' => $rs->id]);
+            $this->syncDataSR($dataDetailOrder);
+        }
+        return $rs;
     }
 
 

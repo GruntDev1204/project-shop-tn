@@ -3,16 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\SaleReport;
+use App\Service\extend\IServiceSaleReport;
 use Illuminate\Http\Request;
 
 class SaleReportController extends Controller
 {
+    private $saleReportSv;
+    public function __construct(IServiceSaleReport $saleReportSv)
+    {
+        $this->saleReportSv = $saleReportSv;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getAll(Request $request)
     {
-        //
+        $this->authorizeRole(['Admin', 'CEO']);
+        return $this->saleReportSv->getAll($request);
     }
 
     /**

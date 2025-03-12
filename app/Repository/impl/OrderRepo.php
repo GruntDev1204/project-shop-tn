@@ -28,7 +28,7 @@ class OrderRepo extends BaseRepository implements IOrderRepo
 
     public function findById($id)
     {
-        return $this->findOrder($id);
+        return $this->findOrder($id, null);
     }
 
     public function ownOrder($userId, $id)

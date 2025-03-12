@@ -7,6 +7,7 @@ use App\Repository\extend\ICategoryRepo as ExtendICategoryRepo;
 use App\Repository\extend\IDetailOrderRepo;
 use App\Repository\extend\IOrderRepo;
 use App\Repository\extend\IProductRepo as ExtendIProductRepo;
+use App\Repository\extend\ISaleReportRepo;
 use App\Repository\extend\IUserRepo;
 use App\Repository\impl\CartRepo;
 use App\Repository\impl\CategoryRepo;
@@ -16,16 +17,19 @@ use App\Service\extend\IServiceProduct as ExtendIServiceProduct;
 use App\Service\impl\ProductService as ImplProductService;
 use Illuminate\Support\ServiceProvider;
 use App\Repository\impl\ProductRepo as ImplProductRepo;
+use App\Repository\impl\SaleReportRepo;
 use App\Repository\impl\UserRepo;
 use App\Service\extend\IServiceCart;
 use App\Service\extend\IServiceCategory;
 use App\Service\extend\IServiceDetailOrder;
 use App\Service\extend\IServiceOrder;
+use App\Service\extend\IServiceSaleReport;
 use App\Service\extend\IServiceUser;
 use App\Service\impl\CartService;
 use App\Service\impl\CategoryService;
 use App\Service\impl\DetailOrderService;
 use App\Service\impl\OrderService;
+use App\Service\impl\SaleReportService;
 use App\Service\impl\UserService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Date;
@@ -54,6 +58,9 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(IDetailOrderRepo::class, DetailOrderRepo::class);
         $this->app->bind(IServiceDetailOrder::class, DetailOrderService::class);
+
+        $this->app->bind(ISaleReportRepo::class, SaleReportRepo::class);
+        $this->app->bind(IServiceSaleReport::class, SaleReportService::class);
     }
 
     /**
