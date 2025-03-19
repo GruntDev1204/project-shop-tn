@@ -3,7 +3,6 @@
 namespace App\Repository\impl;
 
 use App\Exceptions\APIException;
-use App\Exceptions\AuthorizeException;
 use App\Models\Order;
 use App\Repository\BaseRepository;
 use App\Repository\extend\IOrderRepo;

@@ -35,7 +35,7 @@ class ProductRepo extends BaseRepository implements IProductRepo
     public function managerAllProducts($reqParam)
     {
         $query = Product::query();
-        $this->queryData($reqParam, $query);
+        $this->queryData($reqParam, $query, false);
         return $this->paginateQuery($reqParam, $query);
     }
 
@@ -76,8 +76,9 @@ class ProductRepo extends BaseRepository implements IProductRepo
 
     public function changeStatus($id)
     {
-        $product = Product::find($id);
+        $product = $this->findById($id);
         $product->status = !$product->status;
         $product->save();
+        return $product;
     }
 }

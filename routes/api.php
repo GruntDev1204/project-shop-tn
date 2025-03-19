@@ -19,6 +19,7 @@ Route::middleware(['api'])->group(function () {
         Route::post('/', [App\Http\Controllers\ProductController::class, 'create']);
         Route::delete('/{id}', [App\Http\Controllers\ProductController::class, 'destroy']);
         Route::put('/{id}', [App\Http\Controllers\ProductController::class, 'update']);
+        Route::put('/change-status/{id}', [App\Http\Controllers\ProductController::class, 'changeStatus']);
     });
 
     Route::prefix('categories')->group(function () {
@@ -43,6 +44,14 @@ Route::middleware(['api'])->group(function () {
         Route::post('/', [App\Http\Controllers\OrderController::class, 'create']);
         Route::delete('/{id}', [App\Http\Controllers\OrderController::class, 'destroy']);
         Route::put('/{id}', [App\Http\Controllers\OrderController::class, 'update']);
+    });
+
+    Route::prefix('posts')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotifiController::class, 'getAll']);
+        Route::get('/{id}', [App\Http\Controllers\NotifiController::class, 'getById']);
+        Route::post('/', [App\Http\Controllers\NotifiController::class, 'create']);
+        // Route::delete('/{id}', [App\Http\Controllers\NotifiController::class, 'destroy']);
+        // Route::put('/{id}', [App\Http\Controllers\NotifiController::class, 'update']);
     });
 
     Route::prefix('detail-orders')->group(function () {

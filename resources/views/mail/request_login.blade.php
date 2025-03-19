@@ -807,7 +807,8 @@
                                                         <table cellpadding="0" cellspacing="0" width="100%">
                                                             <tr>
                                                                 <td align="center">
-                                                                    <h1 style="color:#13fe89">Change your password!</h1>
+                                                                    <h1 style="color:#13fe89">New login from
+                                                                        {{ $name }}!</h1>
                                                                 </td>
                                                             </tr>
                                                         </table>

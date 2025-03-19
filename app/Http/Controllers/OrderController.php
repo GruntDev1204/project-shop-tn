@@ -22,7 +22,7 @@ class OrderController extends Controller
         if ($this->hasRole(['Admin', 'CEO'])) {
             return $this->returnJson($this->orderService->findById($id), 200, "success!");
         }
-        return $this->returnJson($this->orderService->ownOrder($id, $user->id), 200, "success!");
+        return $this->returnJson($this->orderService->ownOrder($user->id, $id), 200, "success!");
     }
 
     /**

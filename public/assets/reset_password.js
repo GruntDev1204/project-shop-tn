@@ -36,7 +36,7 @@ new Vue({
                     if (res.data.status === 201) {
                         this.success = res.data.message
                         setTimeout(() => {
-                            window.location.href = 'http://localhost:3000/login'
+                            window.location.href = 'http://localhost:3000/auth'
                         }, 1000)
                     }
                 })
@@ -44,7 +44,7 @@ new Vue({
                     if (error.response.status === 410) {
                         this.error = error.response.data.message
                         setTimeout(() => {
-                            window.location.href = 'http://localhost:3000/reset-password'
+                            window.location.href = 'http://localhost:3000/auth'
                         }, 1000)
                     } else {
                         this.error = error.response.data.message

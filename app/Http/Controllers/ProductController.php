@@ -94,4 +94,11 @@ class ProductController extends Controller
             throw new APIException(500, "failure!");
         }
     }
+
+    public function changeStatus($id)
+    {
+        $this->authorizeRole(['Admin', 'CEO']);
+        $result = $this->productSV->changeStatus($id);
+        return $this->returnJson($result, 200, "success!");
+    }
 }
