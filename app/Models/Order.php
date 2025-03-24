@@ -17,4 +17,9 @@ class Order extends Model
         'status',
         'total_price',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

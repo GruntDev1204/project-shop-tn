@@ -65,9 +65,9 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Order $order)
+    public function destroy($id)
     {
         $this->authorizeRole(['Admin', 'CEO']);
-        return $this->returnJson($this->orderService->delete($order->id), 204, "success!");
+        return $this->returnJson($this->orderService->delete($id), 204, "success!");
     }
 }

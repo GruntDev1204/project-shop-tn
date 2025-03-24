@@ -54,10 +54,10 @@ class UserRepo implements IUserRepo
     {
         $user = $this->findById($id);
         $user->status = $valueStatus;
+        $user->save();
         if ($user->status === 2) {
             $this->changeRole($id, 3);
         }
-        $user->save();
         return $user;
     }
 

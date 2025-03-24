@@ -13,10 +13,12 @@ class OrderRepo extends BaseRepository implements IOrderRepo
     private function findOrder($id = null, $userId = null)
     {
         $query = Order::query()
-            ->when($userId !== null, fn($q) => $q->where('user_id', $userId));
+            ->join('users', 'users.id', '=', 'orders.user_id')
+            ->select('orders.*', 'users.email as email')
+            ->when($userId !== null, fn($q) => $q->where('orders.user_id', $userId));
 
         return $id
-            ? $query->where('id', $id)->firstOr(fn() => throw new APIException(404, "Order not found!"))
+            ? $query->where('orders.id', $id)
             : $query->get()->whenEmpty(fn() => throw new APIException(404, "No orders found!"));
     }
 
@@ -27,12 +29,12 @@ class OrderRepo extends BaseRepository implements IOrderRepo
 
     public function findById($id)
     {
-        return $this->findOrder($id, null);
+        return $this->findOrder($id, null)->first() ?? throw new APIException(404, "Order not found!");
     }
 
     public function ownOrder($userId, $id)
     {
-        $order = $this->findOrder($id, $userId);
+        $order = $this->findOrder($id, $userId)->first() ?? throw new APIException(404, "Order not found!");
         return $order;
     }
 

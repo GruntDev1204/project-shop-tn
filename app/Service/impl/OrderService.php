@@ -75,7 +75,8 @@ class OrderService implements IServiceOrder
 
     public function getAll($req)
     {
-        return $this->orderRepo->getAll($req);
+        $rs =  $this->orderRepo->getAll($req);
+        return $rs;
     }
 
     public function findById($id)
