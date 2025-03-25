@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NotifiReq;
-use App\Models\Notifi;
 use App\Service\extend\IServiceNotifi;
-use Illuminate\Http\Request;
 
 class NotifiController extends Controller
 {
@@ -43,35 +41,20 @@ class NotifiController extends Controller
         return $this->returnJson($this->notifiService->findById($id), 200, "success!");
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Notifi $notifi)
+    public function update($id, NotifiReq $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Notifi $notifi)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Notifi $notifi)
-    {
-        //
+        $this->authorizeRole('CEO');
+        $data = $request->all();
+        $data['author_name'] = $request->is_anonymous ? null : $this->getAuth()->name;
+        return $this->returnJson($this->notifiService->update($id, $data), 200, "success!");
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Notifi $notifi)
+    public function destroy($id)
     {
-        //
+        $this->authorizeRole('CEO');
+        return $this->returnJson($this->notifiService->delete($id), 204, "success!");
     }
 }

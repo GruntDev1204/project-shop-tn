@@ -50,8 +50,8 @@ Route::middleware(['api'])->group(function () {
         Route::get('/', [App\Http\Controllers\NotifiController::class, 'getAll']);
         Route::get('/{id}', [App\Http\Controllers\NotifiController::class, 'getById']);
         Route::post('/', [App\Http\Controllers\NotifiController::class, 'create']);
-        // Route::delete('/{id}', [App\Http\Controllers\NotifiController::class, 'destroy']);
-        // Route::put('/{id}', [App\Http\Controllers\NotifiController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\NotifiController::class, 'destroy']);
+        Route::put('/{id}', [App\Http\Controllers\NotifiController::class, 'update']);
     });
 
     Route::prefix('detail-orders')->group(function () {
