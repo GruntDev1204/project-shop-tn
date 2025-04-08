@@ -54,6 +54,15 @@ Route::middleware(['api'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\NotifiController::class, 'update']);
     });
 
+    Route::prefix('blogs')->group(function () {
+        Route::get('/', [App\Http\Controllers\PostsController::class, 'getAll']);
+        Route::get('/{id}', [App\Http\Controllers\NotifiController::class, 'getById']);
+        Route::post('/', [App\Http\Controllers\PostsController::class, 'create']);
+        Route::delete('/{id}', [App\Http\Controllers\PostsController::class, 'destroy']);
+        // Route::put('/{id}', [App\Http\Controllers\NotifiController::class, 'update']);
+    });
+
+
     Route::prefix('detail-orders')->group(function () {
         Route::get('/', [App\Http\Controllers\DetailOrderController::class, 'getAll']);
     });

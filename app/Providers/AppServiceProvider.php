@@ -7,6 +7,7 @@ use App\Repository\extend\ICategoryRepo as ExtendICategoryRepo;
 use App\Repository\extend\IDetailOrderRepo;
 use App\Repository\extend\INotifiRepo;
 use App\Repository\extend\IOrderRepo;
+use App\Repository\extend\IPostRepo;
 use App\Repository\extend\IProductRepo as ExtendIProductRepo;
 use App\Repository\extend\ISaleReportRepo;
 use App\Repository\extend\IUserRepo;
@@ -15,6 +16,7 @@ use App\Repository\impl\CategoryRepo;
 use App\Repository\impl\DetailOrderRepo;
 use App\Repository\impl\NotifiRepo;
 use App\Repository\impl\OrderRepo;
+use App\Repository\impl\PostRepo;
 use App\Service\extend\IServiceProduct as ExtendIServiceProduct;
 use App\Service\impl\ProductService as ImplProductService;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +28,7 @@ use App\Service\extend\IServiceCategory;
 use App\Service\extend\IServiceDetailOrder;
 use App\Service\extend\IServiceNotifi;
 use App\Service\extend\IServiceOrder;
+use App\Service\extend\IServicePost;
 use App\Service\extend\IServiceSaleReport;
 use App\Service\extend\IServiceUser;
 use App\Service\impl\CartService;
@@ -33,6 +36,7 @@ use App\Service\impl\CategoryService;
 use App\Service\impl\DetailOrderService;
 use App\Service\impl\NotifiService;
 use App\Service\impl\OrderService;
+use App\Service\impl\PostService;
 use App\Service\impl\SaleReportService;
 use App\Service\impl\UserService;
 use Carbon\Carbon;
@@ -68,6 +72,9 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(INotifiRepo::class, NotifiRepo::class);
         $this->app->bind(IServiceNotifi::class, NotifiService::class);
+
+        $this->app->bind(IPostRepo::class, PostRepo::class);
+        $this->app->bind(IServicePost::class, PostService::class);
     }
 
     /**
