@@ -16,7 +16,7 @@ class PostRepo extends BaseRepository implements IPostRepo
 
     public function getAll($reqParam)
     {
-        return Posts::all() ??  ["content" => "chả có con mẹ gì cả"];
+        return Posts::join('users', 'users.id', '=', 'posts.user_id')->select('posts.*', 'users.name as user_name', 'users.avatar as avatar')->get() ??  ["content" => "chả có con mẹ gì cả"];
     }
 
     public function findById($id)

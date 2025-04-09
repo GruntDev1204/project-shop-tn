@@ -3,13 +3,14 @@
 namespace App\Service\impl;
 
 use App\Repository\extend\IPostRepo;
+use App\Repository\extend\IUserRepo;
 use App\Service\extend\IServicePost;
 
 class PostService implements IServicePost
 {
     private $postRepo;
 
-    public function __construct(IPostRepo $postRepo)
+    public function __construct(IPostRepo $postRepo, IUserRepo $userRepo)
     {
         $this->postRepo = $postRepo;
     }
