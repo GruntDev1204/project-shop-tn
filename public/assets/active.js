@@ -14,7 +14,7 @@ new Vue({
                 .then((res) => {
                     this.success = res.data.message
                     setTimeout(() => {
-                        window.location.href = 'http://localhost:3000/profile';
+                        window.location.href = 'http://localhost:3004/profile';
                     }, 1000)
                 })
                 .catch((error) => {
