@@ -1,0 +1,51 @@
+.container {
+    cursor: pointer
+}
+
+.alert-fixed {
+    position: fixed;
+    top: 50px;
+    right: 50px;
+    z-index: 9999;
+    width: 400px;
+}
+.alert-successs {
+    background-color: #13e9b3;
+    color: #393939;
+}
+
+.alert-dangerr {
+    background-color: #eb46148a;
+    color: #fbfbfb;
+}
+
+.alert-info{
+    background-image: url('https://firebasestorage.googleapis.com/v0/b/hotrung1204-36f50.appspot.com/o/GruntAdmin%2Funnamed22.jpg?alt=media&token=5782e477-ae9a-4476-8957-1160791692c5');
+    color: white;
+    background-size: cover;
+    border: none;
+    background-position: center;
+    padding: 0 !important;
+}
+
+.alert-success{
+    border : none;
+    background: #020905c8;
+    color: white;
+}
+
+.container {
+    cursor: pointer
+}
+
+img {
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border : 3px solid rgb(10, 0, 12);
+}
+
+body{
+    background-color: #f2f2f2;
+}
