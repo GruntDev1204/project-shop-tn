@@ -67,6 +67,7 @@ class UserRepo implements IUserRepo
             ->join('roles', 'roles.id', '=', 'role_users.role_id')
             ->where('roles.name', '!=', 'CEO')
             ->select('users.*', 'roles.name as role')
+            
             ->get();
     }
 

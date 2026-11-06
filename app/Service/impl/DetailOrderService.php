@@ -22,5 +22,6 @@ class DetailOrderService implements IServiceDetailOrder
         return $this->detailOrderRepo->create($data);
     }
     public function update($id, $data) {}
-    public function delete($id) {}
+    public function delete($id) {
+    }
 }
